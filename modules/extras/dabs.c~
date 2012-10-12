@@ -1,0 +1,10 @@
+#define EXTRAS_C
+
+int fact(int n)
+{
+	int res = 1;
+	int i;
+	for(i=1; i<n+1; i++)
+		res *= i;
+	return res;
+}

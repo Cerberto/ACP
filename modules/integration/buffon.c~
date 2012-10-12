@@ -1,0 +1,55 @@
+
+#define BUFFON_C
+
+#include <stdlib.h>
+#include <math.h>
+#include "random.h"
+
+/*
+ * Routine per il calcolo Monte Carlo di Pi come area del cerchio di raggio 1
+ */
+double Pi_trivial (int N)
+{
+	int i;
+	double *v;
+	int S = 0;
+	double rho;
+	v = malloc(2*sizeof(double));
+	for(i=0; i<N; i++)
+	{
+		ranlxd(v,2);
+		rho = v[0]*v[0] + v[1]*v[1];
+		if(rho < 1)
+			S++;
+	}
+	free(v);
+	return 4.0*(double)S/(double)N;
+}
+
+
+/*
+ * Routine per il calcolo di Pi con il metodo di Buffon
+ */
+double Pi_buffon (int N, double L, double pigreco)
+{
+	int i;
+	double *u;
+	double theta;
+	double S = 0;
+	u = malloc(2*sizeof(double));
+	for(i=0; i<N; i++)
+	{
+		ranlxd(u,2);
+		theta = u[0]*pigreco;
+/*		if(L*sin(theta)/2.0 < u[1])
+		{
+			S += 1.0/(double)N;
+			if(u[1] < 1-L*sin(theta)/2.0)
+				S += 1.0/(double)N;
+		}*/
+		if((L*sin(theta)/2.0 > u[1])||(u[1] > 1-L*sin(theta)/2.0))
+			S += 1.0/(double)N;
+	}
+	free(u);
+	return 2*L/S;
+}

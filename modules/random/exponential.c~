@@ -1,0 +1,47 @@
+#define EXPONENTIAL_C
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "random.h"
+
+#define PI 3.141592653589793
+
+void fexponential (float r[], int n)
+{
+   int k;
+   float u[1];
+   double x, y;
+
+   for (k=0;k<n;)
+   {
+      ranlxs(u,1);
+      x=(double)u[0];
+      
+      y = -log(1.0-x);
+      
+      r[k++]=(float)y;
+      if (k<n)
+         r[k++]=(float)y;
+   }
+}
+
+
+void dexponential (double r[], int n)
+{
+   int k;
+   double u[1];
+   double x, y;
+
+   for (k=0;k<n;)
+   {
+      ranlxd(u,1);
+      x = u[0];
+      
+      y = -log(1.0-x);
+      
+      r[k++] = y;
+      if (k<n)
+         r[k++] = y;
+   }
+}

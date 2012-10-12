@@ -1,0 +1,123 @@
+
+/*******************************************************************************
+ *
+ *		File "gaussmom.c"
+ *
+ * Routines per il calcolo dei momenti di una gaussiana con campionamento di
+ * importanza (le funzioni invocate dall'esterno sono definite in
+ * "modules/random"):
+ * _ gaussian_moment -> calcolo momenti di una gaussiana standard con campione
+ *		di numeri random con distribuzione "standard";
+ * _ wgaussian_moment -> calcolo momenti di una gaussiana standard utilizzando
+ *		campione di numeri random con distribuzione avente larghezza
+ *		specificata (passata ad argomento).
+ *
+ ******************************************************************************/
+
+#define GAUSSMOM_C
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "random.h"
+#include "integration.h"
+
+#define PI 4*atan(1)
+
+/*
+ * Funzione "gaussian_moment". Gli argomenti sono:
+ * _ int m -> ordine del momento da calcolare;
+ * _ void (*random_generator)(double *, int) -> puntatore al generatore di
+ *		numeri random;
+ * _ double (*g)(double) -> puntatore alla funzione corrispondente alla
+ *		distribuzione di numeri random (normalizzata);
+ * _ int N -> numero di numeri random da generare;
+ * _ integral_dble *I -> puntatore alla struttura "integral_dble" che dovrà
+ *		contenere risultato e deviazione standard.
+ */
+void gaussian_moment (int m, void (*random_generator)(double *, int), double (*g)(double), int N, integral_dble * I)
+{
+	if (m < 0)
+	{
+		printf("\nMomento di ordine negativo!!!\n\n");
+		exit(EXIT_FAILURE);
+	}
+	
+	double S = 0;
+	double avstdev = 0;
+	double temp;
+	int k;
+	double *points;
+	points = malloc(N * sizeof(double));
+		
+	random_generator(points, N);
+	
+	/* Calcolo dell'integrale */
+	for(k=0; k<N; k++)
+		S += pow(points[k], (double)m)*exp(- pow(points[k], 2.0)/2.0)/sqrt(2*PI)/g(points[k]);
+	S = S/(double)N;
+	
+	/* Calcolo della deviazione standard */
+	for (k=0; k<N; k++)
+	{
+		temp = S - pow(points[k], (double)m)*exp(- pow(points[k], 2.0)/2.0)/sqrt(2*PI)/g(points[k]);
+		avstdev += temp*temp;
+	}
+	avstdev = avstdev/((double)N)/((double)(N-1));
+	avstdev = sqrt(avstdev);
+
+	free(points);
+
+	(*I).R = S;
+	(*I).E = avstdev;
+}
+
+
+/*
+ * Funzione "wgaussian_moment". Gli argomenti sono:
+ * _ int m -> ordine del momento da calcolare;
+ * _ void (*wrandom_generator)(double *, int, double) -> puntatore al generatore di
+ *		numeri random;
+ * _ double (*g)(double) -> puntatore alla funzione corrispondente alla
+ *		distribuzione di numeri random (normalizzata);
+ * _ double A -> parametro per la larghezza della distribuzione di numeri
+ *		casuali (nel caso di gaussiana corrisponde alla deviazione standard);
+ * _ int N -> numero di numeri random da generare;
+ * _ integral_dble *I -> puntatore alla struttura "integral_dble" che dovrà
+ *		contenere risultato e deviazione standard.
+ */
+void wgaussian_moment (int m, void (*wrandom_generator)(double *, int, double), double (*wg)(double, double), double A, int N, integral_dble * I)
+{
+	if (m < 0)
+	{
+		printf("\nMomento di ordine negativo!!!\n\n");
+		exit(EXIT_FAILURE);
+	}
+	
+	double S = 0;
+	double avstdev = 0;
+	double temp;
+	int k;
+	double *points;
+	points = malloc(N*sizeof(double));
+	
+	wrandom_generator(points, N, A);
+	
+	for(k=0; k<N; k++)
+		S += pow(points[k], (double)m)*exp(- pow(points[k], 2.0)/2.0)/sqrt(2*PI)/wg(points[k],A);
+	S = S/(double)N;
+	
+	for (k=0; k<N; k++)
+	{
+		temp = S - pow(points[k], (double)m)*exp(- pow(points[k], 2.0)/2.0)/sqrt(2*PI)/wg(points[k],A);
+		avstdev += temp*temp;
+	}
+	avstdev = avstdev/((double)N)/((double)(N-1));
+	avstdev = sqrt(avstdev);
+		
+	free(points);
+		
+	(*I).R = S;
+	(*I).E = avstdev;
+}
+

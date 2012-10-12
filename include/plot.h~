@@ -1,0 +1,31 @@
+#ifndef PLOT_H
+#define PLOT_H
+
+#include <stdio.h>
+
+#ifndef PLOT_C
+extern void plot(char *Data, char *Title, char *Xlabel, char *Ylabel, char *Output);
+extern void plotfit(char *Data, char *Func, char *Parameters, char *Title, char *Xlabel, char *Ylabel, char *Output);
+extern void plotrange(char *Data, char *Xrange, char *Yrange, char *Title, char *Xlabel, char *Ylabel, char *Output);
+extern void plotextras(char *Data, char *Title, char *Xlabel, char *Ylabel, char *Output, char *Extras);
+extern void plotlinesusing(char *Data, char *Title, char *Xlabel, char *Ylabel, char *Output, char *Using);
+#endif
+
+#ifndef PLOTERRS_C
+extern void ploterrs(char *Data, char *Title, char *Xlabel, char *Ylabel, char *Output);
+extern void plotfiterrs(char *Data, char *Func, char *Parameters, char *Title, char *Xlabel, char *Ylabel, char *Output);
+#endif
+
+#ifndef PLOTLOG_C
+extern void plotlogx(char *Data, char *Title, char *Xlabel, char *Ylabel, char *Output);
+extern void plotlogy(char *Data, char *Title, char *Xlabel, char *Ylabel, char *Output);
+extern void plotlogxy(char *Data, char *Title, char *Xlabel, char *Ylabel, char *Output);
+#endif
+
+/*
+#ifndef HISTOPLOT_C
+extern void histoplot(char *Data, char *Xrange, char *Yrange);
+#endif
+*/
+
+#endif

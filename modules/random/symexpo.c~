@@ -1,0 +1,161 @@
+
+/*******************************************************************************
+ *
+ *		File "expo.c"
+ *
+ *	Generazione di numeri con distribuzione esponenziale.
+ * Le funzioni accessibili dall'esterno sono:
+ * _ symexpo, symexpo_dble -> generano numeri random (rispettivamente a singola
+ *		e doppia precisione) positivi con distribuzione proporzionale a e^(-|x|)
+ *		e li assegnano agli elementi del vettore r passato ad argomento;
+ * _ symexpodistr -> funzione esponenziale decrescente (corrispondente alla
+ *		distribuzione dei numeri generati da symexpo e symexpo_double;
+ * _ symwexpo, symwexpo_dble -> generano numeri random (rispettivamente a
+ *		singola e doppia precisione) positivi con distribuzione proporzionale a
+ *		e^(-|x|/alpha) (dove alpha è passato ad argomento) e li assegnano agli
+ *		elementi del vettore r passato ad argomento;
+ * _ symwexpodistr -> funzione corrispondente alla distribuzione dei numeri
+ *		generati da symwexpo e symwexpo_dble.
+ *
+ ******************************************************************************/
+
+#define SYMEXPO_C
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "random.h"
+
+#define PI 3.141592653589793
+
+
+void symexpo (float r[], int n)
+{
+	int k;
+	float u[2];
+	double x, y;
+	double choice[1];
+
+	for (k=0; k<n; k++)
+	{
+		ranlxd(choice,1);
+		ranlxs(u,2);
+		x=(double)u[0];
+
+		y = -log(1.0-x);
+      
+		if (choice[0] > 0.5)
+			r[k] = (float)y;
+		
+		else
+			r[k] = -(float)y;
+	}
+}
+
+
+void symexpo_dble (double r[], int n)
+{
+	int k;
+	double u[1];
+	double x, y;
+	double choice[1];
+
+	for (k=0; k<n; k++)
+	{
+		ranlxd(choice,1);
+		ranlxd(u,1);
+		x = u[0];
+      
+		y = -log(1.0-x);
+	
+		if (choice[0] > 0.5)
+			r[k] = y;
+		
+		else
+			r[k] = -y;
+	}
+}
+
+
+double symexpodistr (double x)
+{
+	return exp(-fabs(x))/2;
+}
+
+
+
+void symwexpo (float r[], int n, float alpha)
+{
+	if (alpha <= 0)
+	{
+		printf("\nNon-positive width parameter!!\n\n");
+		exit(EXIT_FAILURE);
+	}
+	
+	else
+	{
+		int k;
+		float u[2];
+		double x, y;
+		double choice[1];
+	
+		for (k=0; k<n; k++)
+		{
+			ranlxs(u,2);
+			x=(double)u[0];
+	
+			y = -(double)alpha*log(1.0-x);
+		
+			if (choice[0] > 0.5)
+				r[k] = (float)y;
+			
+			else
+				r[k] = -(float)y;
+		}
+	}
+}
+
+
+void symwexpo_dble (double r[], int n, double alpha)
+{
+	if (alpha <= 0)
+	{
+		printf("\nNon-positive width parameter!!\n\n");
+		exit(EXIT_FAILURE);
+	}
+	
+	else
+	{
+		int k;
+		double u[1];
+		double x, y;
+		double choice[1];
+	
+		for (k=0; k<n; k++)
+		{
+			ranlxd(u,1);
+			x = u[0];
+		
+			y = -alpha*log(1.0-x);
+		
+			if (choice[0] > 0.5)
+				r[k] = y;
+			
+			else
+				r[k] = -y;
+		}
+	}
+}
+
+
+double symwexpodistr (double x, double alpha)
+{
+	if (alpha <= 0)
+	{
+		printf("\nNon-positive width parameter!!\n\n");
+		exit(EXIT_FAILURE);
+	}
+	
+	else
+		return exp(-fabs(x)/alpha)/2/alpha;
+}

@@ -1,0 +1,12 @@
+#ifndef EXTRAS_H
+#define EXTRAS_H
+
+#ifndef EXTRAS_C
+extern int factorial(int n);
+#endif
+
+#ifndef ZEROS_C
+extern ...
+#ifndef
+
+#endif

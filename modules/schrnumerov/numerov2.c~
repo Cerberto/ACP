@@ -1,0 +1,20 @@
+/*******************************************************************************
+ *
+ *	File "numerov2.c"
+ *
+ *	Routines useful for solving Schrodinger equation in the case of central
+ * potential.
+ *	Funtions are ....
+ *
+ ******************************************************************************/
+
+
+#define NUMEROV_C
+
+#include <stdlib.h>
+#include <math.h>
+
+double evol (double (*K)(double r, int l), double (*S)(double r), double now, double prev, double h)
+{
+	return h*h
+}

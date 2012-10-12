@@ -1,0 +1,18 @@
+#define SIMPSON_C
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "integration.h"
+
+
+float fsimpson (float (*f)(float), float a, float b)
+{
+	return (f(a) + 4*f((a+b)/2) + f(b))*(b-a)/6;
+}
+
+
+double dsimpson (double (*f)(double), double a, double b)
+{
+	return (f(a) + 4*f((a+b)/2) + f(b))*(b-a)/6;
+}

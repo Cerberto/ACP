@@ -1,0 +1,10 @@
+#ifndef SCHRNUMEROV_H
+#define SCHRNUMEROV_H
+
+#ifndef NUMEROV_C
+extern double evol(double (*f)(double), double (*g)(double), double x, double y);
+extern double Ksq(double (*V)(double), double E, int l);
+#endif
+
+
+#endif

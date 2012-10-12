@@ -1,0 +1,42 @@
+#define ROOTEXP_C
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "random.h"
+
+
+void rootexp (float vf[], int n)
+{
+	int k;
+	float temp_exp[1];
+	float temp_gauss[1];
+	double x1, x2, y;
+	
+	for(k=0; k<n;)
+	{
+		x1 = (double)gauss(temp_exp,1);
+		x2 = (double)exponential(temp_gauss,1);
+		y = pow(x1,2) + x2;
+		
+		vf[k++] = (float)y;
+	}
+}
+
+
+void rootexp_dble (double vd[], int n)
+{
+	int k;
+	double temp_exp[1];
+	double temp_gauss[1];
+	double x1, x2, y;
+	
+	for(k=0; k<n;)
+	{
+		x1 = gauss_dble(temp_exp,1);
+		x2 = exponential_dble(temp_gauss,1);
+		y = pow(x1,2) + x2;
+		
+		vf[k++] = y;
+	}
+}

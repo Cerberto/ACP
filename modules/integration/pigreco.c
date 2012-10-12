@@ -1,0 +1,61 @@
+
+/*******************************************************************************
+ *
+ *		File "pigreco.c"
+ *
+ * Routines per il calcolo di pigreco con metodi montecarlo:
+ * _ double Pi_trivial -> calcolo di pigreco come 4 volte l'area del settore
+ *		circolare di ambiezza 90° e raggio unitario con il metodo "hit or
+ *		missed";
+ * _ double Pi_buffon -> calcolo di pigreco con il metodo dell'ago di buffon.
+ *
+ ******************************************************************************/
+
+#define PIGRECO_C
+
+#include <stdlib.h>
+#include <math.h>
+#include "random.h"
+#include "integration.h"
+
+
+/* Pigreco "hit or missed" */
+double Pi_trivial (int N)
+{
+	int i;
+	double *v;
+	int S = 0;
+	double rho;
+	v = malloc(2*sizeof(double));
+	for(i=0; i<N; i++)
+	{
+		ranlxd(v,2);
+		rho = v[0]*v[0] + v[1]*v[1];
+		if(rho < 1)
+			S++;
+	}
+	free(v);
+	return 4.0*(double)S/(double)N;
+}
+
+
+/* Pigreco con il metodo di Buffon */
+double Pi_buffon (int N, double L, double pigreco)
+{
+	int i;
+	double *u;
+	double theta;
+	double S = 0;
+	u = malloc(2*sizeof(double));
+	for(i=0; i<N; i++)
+	{
+		ranlxd(u,2);
+		theta = u[0]*pigreco;
+		if((L*sin(theta)/2.0 > u[1])||(u[1] > 1-L*sin(theta)/2.0))
+			S += 1.0/(double)N;
+	}
+	free(u);
+
+	return 2*L/S;;
+}
+

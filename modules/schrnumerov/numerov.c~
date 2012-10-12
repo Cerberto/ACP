@@ -1,0 +1,49 @@
+/*******************************************************************************
+ *
+ *	File "numerov2.c"
+ *
+ *	Routines useful for solving Schrodinger equation in the case of central
+ * potential.
+ *	Funtions are ....
+ *
+ ******************************************************************************/
+
+
+#define NUMEROV_C
+
+#include <stdlib.h>
+#include <math.h>
+#include "schrnumerov.h"
+
+
+static double Ksq (double x, double (*V)(double), double E, int L)
+{
+//	return 2*M*(E - L*(L+1)/(2*M*x*x) - V(x));
+	return 2*M*(E - V(x));
+}
+
+
+void evol (double (*V)(double), double (*S)(double), double r, double h, double *y, double E, int L)
+{
+	double Know, Kprev, Knext;
+		Know	= Ksq(r,V,E,L);
+		Kprev	= Ksq(r-h,V,E,L);
+		Knext	= Ksq(r+h,V,E,L);
+	
+	 y[2] = (h*h/12.0*(S(r+h) + 10*S(r) + S(r-h)) + y[1]*(2 - 5.0/6.0*Know*Know*h*h) - y[0]*(1 + h*h/12.0*Kprev*Kprev))/(1 + h*h/12.0*Knext*Knext);
+	 
+	 y[0] = y[1];  y[1] = y[2];
+}
+
+
+void evol_back (double (*V)(double), double (*S)(double), double r, double h, double *y, double E, int L)
+{
+	double Know, Kprev, Knext;
+		Know	= Ksq(r,V,E,L);
+		Kprev	= Ksq(r-h,V,E,L);
+		Knext	= Ksq(r+h,V,E,L);
+	
+	 y[0] = (h*h/12.0*(S(r+h) + 10*S(r) + S(r-h)) + y[1]*(2 - 5.0/6.0*Know*Know*h*h) - y[0]*(1 + h*h/12.0*Knext*Knext))/(1 + h*h/12.0*Kprev*Kprev);
+	 
+	 y[2] = y[1];  y[1] = y[0];
+}
