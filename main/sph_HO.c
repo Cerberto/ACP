@@ -25,9 +25,9 @@
 #define N 1.0e-2
 
 /* Increment and number of steps */
-#define EMIN 3.9
+#define EMIN 3.5
 #define DE 0.01
-#define ESTEPS 30
+#define ESTEPS 500
 
 /* Step length */
 #define H 1.0e-5
@@ -73,13 +73,13 @@ int main (int argc, char *argv[])
 	
 	char *out_file;
 		out_file = malloc(100*sizeof(char));
-	FILE *output[ESTEPS];
+	/*FILE *output[ESTEPS];
 	for(i=0; i<ESTEPS; i++)
 	{
 		sprintf(out_file, "isotropic_HO/solution_%.5lf.dat", EMIN+i*DE);
 		//sprintf(out_file, "wood_saxon/solution_%.5lf.dat", EMIN+i*DE);
 		output[i] = fopen(out_file, "w");
-	}
+	}*/
 	FILE *outboundary;
 		sprintf(out_file, "isotropic_HO/yRmaxE_%d.dat", L);
 		//sprintf(out_file, "wood_saxon/yRmaxE_%d.dat", L);
@@ -91,7 +91,7 @@ int main (int argc, char *argv[])
 	
 	for(i=0; i<ESTEPS; i++)
 	{
-		printf("\tStep %d of %d... ", i+1, ESTEPS);
+		printf("\tStep %d of %d\n", i+1, ESTEPS);
 		fflush(stdout);
 		y[0] = N;	y[2] = 0;	y[1] = N;
 		for(j=0; j<L+1; j++)
@@ -100,11 +100,11 @@ int main (int argc, char *argv[])
 			y[1]*=(2*H);
 		}
 		
-		fprintf(output[i], "%e\t%e\n", H, y[1]);
+		//fprintf(output[i], "%e\t%e\n", H, y[1]);
 		r = 2*H;
 		while(r<RMAX)
 		{
-			fprintf(output[i], "%e\t%e\n", r, y[1]);
+			//fprintf(output[i], "%e\t%e\n", r, y[1]);
 			evol(V, null, r, H, y, E, L);
 			r += H;
 		};
@@ -112,12 +112,11 @@ int main (int argc, char *argv[])
 		fprintf(outboundary, "%e\t%e\n", E, y[1]);
 		r = H;
 		E += DE;
-		printf("Done!\n");
 	}
 	
 	fclose(outboundary);
-	for(i=0; i<ESTEPS; i++)
-		fclose(output[i]);
+/*	for(i=0; i<ESTEPS; i++)
+		fclose(output[i]);*/
 	
 	exit(EXIT_SUCCESS);
 }
