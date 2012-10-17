@@ -5,9 +5,6 @@
  * oscillator with Numerov method.
  *	Routines are defined in ../modules/numerov/numerov2.c
  *
- *	The program need as input arguments:
- *	- 
- *
  ******************************************************************************/
  
 #define MAIN_PROGRAM
@@ -47,6 +44,7 @@ double V (double r)
 	//return -A/(1+ exp(mu*(r-R)));
 }
 
+
 /* Null function */
 double null (double x)
 {
@@ -54,22 +52,48 @@ double null (double x)
 }
 
 
+/* Function that computes the value of the wave function at the end of the mesh */
+double yRmax (double *y, double E, int L)
+{
+	y[0] = N;	y[2] = 0;	y[1] = N;
+	for(j=0; j<L+1; j++)
+	{
+		y[0]*=H;
+		y[1]*=(2*H);
+	}
+	
+	r = 2*H;
+	while(r<RMAX)
+	{
+		evol(V, null, r, H, y, E, L);
+		r += H;
+	};
+}
+
+
 int main (int argc, char *argv[])
 {
 	if(argc<2)
 	{
-		printf("Missing input parameters: please specify L (angular momentum)\n\n");
+		printf("\nMissing input parameters: please specify L (angular momentum)\n\n");
 		exit(EXIT_FAILURE);
 	}
 	
 	double r;
+
 	double E = EMIN;
 	int i, j, L;
+	int zeros;
 	L = atoi(argv[1]);
 	
 	/* array in which are going to be saved the 3 points used in the algorithm
 	 * and their initialization */
 	double y[3];
+	
+	/* array in which will be saved two values of E and the correspondent values of the solution at the last point of the mesh;
+	 * this will be used in finding the eigenvalues
+	 **/
+	double Ey[4];
 	
 	char *out_file;
 		out_file = malloc(100*sizeof(char));
@@ -93,24 +117,20 @@ int main (int argc, char *argv[])
 	{
 		printf("\tStep %d of %d\n", i+1, ESTEPS);
 		fflush(stdout);
-		y[0] = N;	y[2] = 0;	y[1] = N;
-		for(j=0; j<L+1; j++)
-		{	
-			y[0]*=H;
-			y[1]*=(2*H);
-		}
-		
-		//fprintf(output[i], "%e\t%e\n", H, y[1]);
-		r = 2*H;
-		while(r<RMAX)
-		{
-			//fprintf(output[i], "%e\t%e\n", r, y[1]);
-			evol(V, null, r, H, y, E, L);
-			r += H;
-		};
-		
+		yRmax(y, E, L);
 		fprintf(outboundary, "%e\t%e\n", E, y[1]);
+		if(temp*y[1]<0)
+		{
+			zeros++;
+			Ey[0]=Etemp;
+			Ey[1]=E;
+			Ey[2]=ytemp;
+			Ey[3]=y[1];
+			eigenvalue( /*...*/);
+		}
+		temp = y[1];
 		r = H;
+		Etemp = E;
 		E += DE;
 	}
 	

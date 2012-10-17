@@ -28,4 +28,4 @@ set output 'plot_yRmaxE.eps'
 
 #show style line
 
-plot 'yRmaxE_0.dat' with linespoints ls 1
+plot 'yRmaxE_1.dat' with lines ls 1
