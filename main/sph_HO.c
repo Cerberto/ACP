@@ -36,6 +36,9 @@
  * #define mu 1.0
  * #define R 1.0
  */
+ 
+double *y;
+int L;
 
 /* Potential */
 double V (double r)
@@ -53,7 +56,7 @@ double null (double x)
 
 
 /* Function that computes the value of the wave function at the end of the mesh */
-double yRmax (double *y, double E, int L)
+double yRmax (double E)
 {
 	y[0] = N;	y[2] = 0;	y[1] = N;
 	for(j=0; j<L+1; j++)
@@ -68,6 +71,7 @@ double yRmax (double *y, double E, int L)
 		evol(V, null, r, H, y, E, L);
 		r += H;
 	};
+	return y[1];
 }
 
 
@@ -82,18 +86,12 @@ int main (int argc, char *argv[])
 	double r;
 
 	double E = EMIN;
-	int i, j, L;
-	int zeros;
+	int i, j, zeros;
 	L = atoi(argv[1]);
 	
 	/* array in which are going to be saved the 3 points used in the algorithm
 	 * and their initialization */
-	double y[3];
-	
-	/* array in which will be saved two values of E and the correspondent values of the solution at the last point of the mesh;
-	 * this will be used in finding the eigenvalues
-	 **/
-	double Ey[4];
+	y = malloc(3*sizeof(double));
 	
 	char *out_file;
 		out_file = malloc(100*sizeof(char));
@@ -117,16 +115,16 @@ int main (int argc, char *argv[])
 	{
 		printf("\tStep %d of %d\n", i+1, ESTEPS);
 		fflush(stdout);
-		yRmax(y, E, L);
+		yRmax(E);
 		fprintf(outboundary, "%e\t%e\n", E, y[1]);
 		if(temp*y[1]<0)
 		{
+			Zsecant
 			zeros++;
 			Ey[0]=Etemp;
 			Ey[1]=E;
 			Ey[2]=ytemp;
 			Ey[3]=y[1];
-			eigenvalue( /*...*/);
 		}
 		temp = y[1];
 		r = H;
