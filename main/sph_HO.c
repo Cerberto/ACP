@@ -58,6 +58,8 @@ double null (double x)
 /* Function that computes the value of the wave function at the end of the mesh */
 double yRmax (double E)
 {
+	double r;
+	int j;
 	y[0] = N;	y[2] = 0;	y[1] = N;
 	for(j=0; j<L+1; j++)
 	{
@@ -75,6 +77,33 @@ double yRmax (double E)
 }
 
 
+void print_solution (double E, double *x, char *filename)
+{
+	double r;
+	int j;
+	FILE *output;
+		output = fopen(filename, "w");
+	x[0] = N;	x[2] = 0;	x[1] = N;
+	for(j=0; j<L+1; j++)
+	{
+		x[0]*=H;
+		x[1]*=(2*H);
+	}
+	
+	r = 2*H;
+	while(r<RMAX)
+	{
+		evol(V, null, r, H, x, E, L);
+		fprintf(output,"%e\t%e\n", r, y[1]);
+		r += H;
+	};
+	
+	fclose(output);
+	
+	/* METTERE QUI UNA CHIAMATA A SYSTEM PER STAMPARE SOLUZIONE CON GNUPLOT */
+}
+
+
 int main (int argc, char *argv[])
 {
 	if(argc<2)
@@ -87,18 +116,24 @@ int main (int argc, char *argv[])
 
 	double E = EMIN;	/* energy */
 	double EV;			/* energy eigenvalue */
+	double temp, Etemp;
 	int i, j, zeros;
 	L = atoi(argv[1]);
+	
+	printf("\nNICOLO'!!! w la PRUGNAAAAAAAA!!\n\n");
+	fflush(stdout);
 	
 	/* array in which are going to be saved the 3 points used in the algorithm
 	 * and their initialization */
 	y = malloc(3*sizeof(double));
 	
-	double *ye;
+	double *ye, *V;
 	ye = malloc(2*sizeof(double));
+	V = malloc(3*sizeof(double));
 	
 	char *out_file;
 		out_file = malloc(100*sizeof(char));
+		
 	
 	FILE *outboundary;
 		sprintf(out_file, "isotropic_HO/yRmaxE_%d.dat", L);
@@ -121,6 +156,8 @@ int main (int argc, char *argv[])
 			ye[0]=Etemp;
 			ye[1]=E;
 			EV = Zsecant(yRmax,ye,1.0e-5);
+			sprintf(out_file, "isotropic_HO/solution_%d_%2.5lf.dat", L, EV);
+			print_solution(EV, V, out_file);
 		}
 		temp = y[1];
 		r = H;
