@@ -75,13 +75,6 @@ double yRmax (double E)
 }
 
 
-double eigenvalue (double (*f)(double), double min, double max, double fmin, double fmax)
-{
-	
-}
-
-
-
 int main (int argc, char *argv[])
 {
 	if(argc<2)
@@ -90,9 +83,10 @@ int main (int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 	
-	double r;
+	double r;	/* distance from the origin */
 
-	double E = EMIN;
+	double E = EMIN;	/* energy */
+	double EV;			/* energy eigenvalue */
 	int i, j, zeros;
 	L = atoi(argv[1]);
 	
@@ -105,13 +99,7 @@ int main (int argc, char *argv[])
 	
 	char *out_file;
 		out_file = malloc(100*sizeof(char));
-	/*FILE *output[ESTEPS];
-	for(i=0; i<ESTEPS; i++)
-	{
-		sprintf(out_file, "isotropic_HO/solution_%.5lf.dat", EMIN+i*DE);
-		//sprintf(out_file, "wood_saxon/solution_%.5lf.dat", EMIN+i*DE);
-		output[i] = fopen(out_file, "w");
-	}*/
+	
 	FILE *outboundary;
 		sprintf(out_file, "isotropic_HO/yRmaxE_%d.dat", L);
 		//sprintf(out_file, "wood_saxon/yRmaxE_%d.dat", L);
@@ -132,6 +120,7 @@ int main (int argc, char *argv[])
 			zeros++;
 			ye[0]=Etemp;
 			ye[1]=E;
+			EV = Zsecant(yRmax,ye,1.0e-5);
 		}
 		temp = y[1];
 		r = H;
@@ -140,8 +129,6 @@ int main (int argc, char *argv[])
 	}
 	
 	fclose(outboundary);
-/*	for(i=0; i<ESTEPS; i++)
-		fclose(output[i]);*/
 	
 	exit(EXIT_SUCCESS);
 }
