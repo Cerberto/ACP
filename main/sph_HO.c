@@ -75,6 +75,13 @@ double yRmax (double E)
 }
 
 
+double eigenvalue (double (*f)(double), double min, double max, double fmin, double fmax)
+{
+	
+}
+
+
+
 int main (int argc, char *argv[])
 {
 	if(argc<2)
@@ -92,6 +99,9 @@ int main (int argc, char *argv[])
 	/* array in which are going to be saved the 3 points used in the algorithm
 	 * and their initialization */
 	y = malloc(3*sizeof(double));
+	
+	double *ye;
+	ye = malloc(2*sizeof(double));
 	
 	char *out_file;
 		out_file = malloc(100*sizeof(char));
@@ -119,12 +129,9 @@ int main (int argc, char *argv[])
 		fprintf(outboundary, "%e\t%e\n", E, y[1]);
 		if(temp*y[1]<0)
 		{
-			Zsecant
 			zeros++;
-			Ey[0]=Etemp;
-			Ey[1]=E;
-			Ey[2]=ytemp;
-			Ey[3]=y[1];
+			ye[0]=Etemp;
+			ye[1]=E;
 		}
 		temp = y[1];
 		r = H;

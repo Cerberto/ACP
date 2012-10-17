@@ -25,35 +25,35 @@ double Zbisection (double (*f)(double), double *v, double precision)
 	if(f(v[0])*f(v[1])>=0)
 	{
 		printf("\nIt is impossible to use the bisection method in finding zeros of the function!\n\n");
-		exit(EXIT_SUCCESS);
+		exit(EXIT_FAILURE);
 	}
 	
 	double x = (v[0] + v[1])/2.0;
 	if(fabs(v[0]-v[1])<precision)
 		return x;
-	
+
 	else if(f(v[0])*f(x)<0)
 		v[1] = x;
 	else v[0] = x;
-	
+
 	Zbisection(f,v,precision);
 }
 
 double Zsecant (double (*f)(double), double *v, double precision)
-{		
+{
 	if(f(v[0])==f(v[1]) || (f(v[0])*f(v[1])>0))
 	{
 		printf("\nIt is impossible to use the secant method in finding zeros of the function!\n\n");
-		exit(EXIT_SUCCESS);
+		exit(EXIT_FAILURE);
 	}
-	
+
 	double x = v[0] + (v[0]-v[1])*f(v[0])/(f(v[1])-f(v[0]));
 	if(fabs(v[0]-v[1])<precision)
 		return x;
-	
+
 	else if(f(v[0])*f(x)<0)
 		v[1] = x;
 	else v[0] = x;
-	
+
 	Zsecant(f,v,precision);
 }
