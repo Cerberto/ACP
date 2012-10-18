@@ -148,13 +148,13 @@ int main (int argc, char *argv[])
 		fflush(stdout);
 		yRmax(E);
 		fprintf(outboundary, "%e\t%e\n", E, y[1]);
-		if(temp*y[1]<0)
+		if((temp*y[1])<0)
 		{
 			zeros++;
 			ye[0]=Etemp;
 			ye[1]=E;
 			EV = Zsecant(yRmax,ye,1.0e-5);
-			sprintf(out_file, "isotropic_HO/solution_%d_%2.5lf.dat", L, EV);
+			sprintf(out_file, "isotropic_HO/solution_%d_%2.6lf.dat", L, EV);
 			print_solution(EV, X, out_file);
 		}
 		temp = y[1];

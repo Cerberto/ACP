@@ -1,8 +1,0 @@
-#
-# Value of the radial part of the isotropic harmonic oscillator's solution
-# at the last point of the mesh as a function of the energy parameter.
-# Angular momentum (absolute value) quantum number L = 0
-#
-3.500000e+00	-2.919957e-06
-3.510000e+00	2.359073e-02
-3.520000e+00	4.657572e-02
