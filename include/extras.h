@@ -3,6 +3,7 @@
 
 #ifndef EXTRAS_C
 extern int factorial(int n);
+extern void pippo();
 #endif
 
 #ifndef ZEROS_C

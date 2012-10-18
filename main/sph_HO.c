@@ -36,7 +36,7 @@
  * #define mu 1.0
  * #define R 1.0
  */
- 
+
 double *y;
 int L;
 
@@ -116,20 +116,18 @@ int main (int argc, char *argv[])
 
 	double E = EMIN;	/* energy */
 	double EV;			/* energy eigenvalue */
-	double temp, Etemp;
-	int i, j, zeros;
+	double temp = 0;
+	double Etemp = 0;
+	int i, zeros;
 	L = atoi(argv[1]);
-	
-	printf("\nNICOLO'!!! w la PRUGNAAAAAAAA!!\n\n");
-	fflush(stdout);
 	
 	/* array in which are going to be saved the 3 points used in the algorithm
 	 * and their initialization */
 	y = malloc(3*sizeof(double));
 	
-	double *ye, *V;
+	double *ye, *X;
 	ye = malloc(2*sizeof(double));
-	V = malloc(3*sizeof(double));
+	X = malloc(3*sizeof(double));
 	
 	char *out_file;
 		out_file = malloc(100*sizeof(char));
@@ -157,7 +155,7 @@ int main (int argc, char *argv[])
 			ye[1]=E;
 			EV = Zsecant(yRmax,ye,1.0e-5);
 			sprintf(out_file, "isotropic_HO/solution_%d_%2.5lf.dat", L, EV);
-			print_solution(EV, V, out_file);
+			print_solution(EV, X, out_file);
 		}
 		temp = y[1];
 		r = H;
