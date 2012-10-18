@@ -22,7 +22,7 @@
 #define N 1.0e-2
 
 /* Increment and number of steps */
-#define EMIN 3.5
+//#define EMIN 3.5
 #define DE 0.007
 #define ESTEPS 500
 
@@ -106,12 +106,13 @@ void print_solution (double E, double *x, char *filename)
 
 int main (int argc, char *argv[])
 {
-	if(argc<2)
+	if(argc<3)
 	{
-		printf("\nMissing input parameters: please specify L (angular momentum)\n\n");
+		printf("\nMissing input parameters: please specify L (angular momentum) and E.\n\n");
 		exit(EXIT_FAILURE);
 	}
-
+	double EMIN;
+		EMIN = atof(argv[2]);
 	double E = EMIN;	/* energy */
 	double EV;			/* energy eigenvalue */
 	double temp = 0;
@@ -157,8 +158,8 @@ int main (int argc, char *argv[])
 			ye[1]=E;
 			printf("%e\t%e\n", ye[0], ye[1]);
 				fflush(stdout);
-			//EV = Zsecant(yRmax, ye, 1.0e-8);
-			EV = Zbisection(yRmax, ye, 1.0e-8);
+			EV = Zsecant(yRmax, ye, 1.0e-8);
+			//EV = Zbisection(yRmax, ye, 1.0e-8);
 			sprintf(out_file, "isotropic_HO/solution_%d_%.7lf.dat", L, EV);
 			print_solution(EV, X, out_file);
 		}
