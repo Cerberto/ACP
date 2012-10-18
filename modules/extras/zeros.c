@@ -23,6 +23,7 @@
 
 double Zbisection (double (*f)(double), double *v, double accuracy)
 {
+	int i = 0;
 	double x, f0, f1, fx;
 	f0 = f(v[0]);
 	f1 = f(v[1]);
@@ -34,16 +35,20 @@ double Zbisection (double (*f)(double), double *v, double accuracy)
 	}
 	
 	do{
-		x = (v[0]+v[1])/2.0;
+		i++;
+		printf("Iteration %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
+		x = v[0] + (v[0]-v[1])*f0/(f1-f0);
 		fx = f(x);
 		
 		if((f0*fx)<0)
-		{	v[1]=x;   f1 = fx;   }
+		{	v[1]=x;   f1 = fx;   continue;  }
 		
-		else if(fx==0)
-			break;
+		else if((f0*fx)>0)
+		{	v[0]=x;   f0 = fx;   continue;  }
+
 		else
-			v[0]=x;
+			break;
+
 	}while(fabs(v[0]-v[1]) > accuracy);
 	
 	return x;
@@ -69,13 +74,14 @@ double Zsecant (double (*f)(double), double *v, double accuracy)
 		fx = f(x);
 		
 		if((f0*fx)<0)
-		{	v[1]=x;   f1 = fx;   }
+		{	v[1]=x;   f1 = fx;   continue;  }
 		
-		else if(fx==0)
-			break;
+		else if((f0*fx)>0)
+		{	v[0]=x;   f0 = fx;   continue;  }
 
 		else
-		{	v[0]=x;   f0 = fx;   }
+			break;
+
 	}while(fabs(v[0]-v[1]) > accuracy);
 	
 	return x;

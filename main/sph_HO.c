@@ -157,8 +157,9 @@ int main (int argc, char *argv[])
 			ye[1]=E;
 			printf("%e\t%e\n", ye[0], ye[1]);
 				fflush(stdout);
-			EV = Zsecant(yRmax, ye, 1.0e-8);
-			sprintf(out_file, "isotropic_HO/solution_%d_%2.6lf.dat", L, EV);
+			//EV = Zsecant(yRmax, ye, 1.0e-8);
+			EV = Zbisection(yRmax, ye, 1.0e-8);
+			sprintf(out_file, "isotropic_HO/solution_%d_%.7lf.dat", L, EV);
 			print_solution(EV, X, out_file);
 		}
 		temp = y[1];
