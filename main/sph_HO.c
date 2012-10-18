@@ -23,7 +23,7 @@
 
 /* Increment and number of steps */
 #define EMIN 3.5
-#define DE 0.01
+#define DE 0.007
 #define ESTEPS 500
 
 /* Step length */
@@ -111,8 +111,6 @@ int main (int argc, char *argv[])
 		printf("\nMissing input parameters: please specify L (angular momentum)\n\n");
 		exit(EXIT_FAILURE);
 	}
-	
-	double r;	/* distance from the origin */
 
 	double E = EMIN;	/* energy */
 	double EV;			/* energy eigenvalue */
@@ -148,17 +146,22 @@ int main (int argc, char *argv[])
 		fflush(stdout);
 		yRmax(E);
 		fprintf(outboundary, "%e\t%e\n", E, y[1]);
+		
+		printf("%e\t%e\t%e\n", E, temp, y[1]);
+		fflush(stdout);
+		
 		if((temp*y[1])<0)
 		{
 			zeros++;
 			ye[0]=Etemp;
 			ye[1]=E;
-			EV = Zsecant(yRmax,ye,1.0e-5);
+			printf("%e\t%e\n", ye[0], ye[1]);
+				fflush(stdout);
+			EV = Zsecant(yRmax, ye, 1.0e-8);
 			sprintf(out_file, "isotropic_HO/solution_%d_%2.6lf.dat", L, EV);
 			print_solution(EV, X, out_file);
 		}
 		temp = y[1];
-		r = H;
 		Etemp = E;
 		E += DE;
 	}

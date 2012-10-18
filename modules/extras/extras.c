@@ -24,4 +24,5 @@ int factorial(int n)
 void pippo()
 {
 	printf("\tPippo!\n");
+	fflush(stdout);
 }

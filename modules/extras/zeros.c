@@ -18,23 +18,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "extras.h"
 
 
 double Zbisection (double (*f)(double), double *v, double accuracy)
 {
-	if(f(v[0])*f(v[1])>=0)
+	double x, f0, f1, fx;
+	f0 = f(v[0]);
+	f1 = f(v[1]);
+	
+	if(f0==f1 || (f0*f1>0))
 	{
-		printf("\nIt is impossible to use the bisection method in finding zeros of the function!\n\n");
+		printf("\nIt is impossible to use the bisection method in finding the zeros of the function!\n\n");
 		exit(EXIT_FAILURE);
 	}
 	
-	double x;
-	
 	do{
-		x = (v[0] + v[1])/2.0;
-		if((f(v[0])*f(x))<0)
-			v[1]=x;
-		else if(f(x)==0)
+		x = (v[0]+v[1])/2.0;
+		fx = f(x);
+		
+		if((f0*fx)<0)
+		{	v[1]=x;   f1 = fx;   }
+		
+		else if(fx==0)
 			break;
 		else
 			v[0]=x;
@@ -45,17 +51,20 @@ double Zbisection (double (*f)(double), double *v, double accuracy)
 
 double Zsecant (double (*f)(double), double *v, double accuracy)
 {
+	int i=0;
 	double x, f0, f1, fx;
 	f0 = f(v[0]);
 	f1 = f(v[1]);
-	
-	if(f0==f1 || (f0*f1>0))
+	printf("Iteration %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
+	if((f0==f1) || (f0*f1>0))
 	{
-		printf("\nIt is impossible to use the secant method in finding zeros of the function!\n\n");
+		printf("\nIt is impossible to use the secant method in finding the zeros of the function!\n\n");
 		exit(EXIT_FAILURE);
 	}
 	
 	do{
+		i++;
+		printf("Iteration %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
 		x = v[0] + (v[0]-v[1])*f0/(f1-f0);
 		fx = f(x);
 		
@@ -64,8 +73,9 @@ double Zsecant (double (*f)(double), double *v, double accuracy)
 		
 		else if(fx==0)
 			break;
+
 		else
-			v[0]=x;
+		{	v[0]=x;   f0 = fx;   }
 	}while(fabs(v[0]-v[1]) > accuracy);
 	
 	return x;
