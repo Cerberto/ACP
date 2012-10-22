@@ -33,7 +33,7 @@ CLUSTER = jackknife
 
 START = start utils
 
-EXTRAS = extras
+EXTRAS = extras zeros
 
 SCHRNUMEROV = numerov
 

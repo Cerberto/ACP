@@ -52,7 +52,7 @@ void evol_back (double (*V)(double), double (*S)(double), double r, double h, do
 		Kprev	= Ksq(r-h,V,E,L);
 		Knext	= Ksq(r+h,V,E,L);
 	
-	 y[0] = (h*h/12.0*(S(r+h) + 10*S(r) + S(r-h)) + y[1]*(2 - 5.0/6.0*Know*Know*h*h) - y[0]*(1 + h*h/12.0*Knext*Knext))/(1 + h*h/12.0*Kprev*Kprev);
+	 y[0] = (h*h/12.0*(S(r+h) + 10*S(r) + S(r-h)) + y[1]*(2 - 5.0/6.0*Know*h*h) - y[0]*(1 + h*h/12.0*Knext))/(1 + h*h/12.0*Kprev);
 	 
 	 y[2] = y[1];  y[1] = y[0];
 }

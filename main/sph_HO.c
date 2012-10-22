@@ -12,11 +12,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "schrnumerov.h"
 #include "extras.h"
 
-/* Maximum radius */
-#define RMAX 5.0
 
 /* "Normalization" constant */
 #define N 1.0e-2
@@ -24,10 +23,14 @@
 /* Increment and number of steps */
 //#define EMIN 3.5
 #define DE 0.007
-#define ESTEPS 500
+#define ESTEPS 1000
 
 /* Step length */
 #define H 1.0e-5
+
+/* Maximum radius */
+//#define RMAX 5.0
+double RMAX = 5.0;
 
 /* Proper frequency */
 #define Omega 1.0
@@ -94,7 +97,7 @@ void print_solution (double E, double *x, char *filename)
 	while(r<RMAX)
 	{
 		evol(V, null, r, H, x, E, L);
-		fprintf(output,"%e\t%e\n", r, y[1]);
+		fprintf(output,"%.11e\t%.11e\n", r, x[1]);
 		r += H;
 	};
 	
@@ -145,10 +148,11 @@ int main (int argc, char *argv[])
 	{
 		printf("\tStep %d of %d\n", i+1, ESTEPS);
 		fflush(stdout);
+		RMAX = 2.3*sqrt(E + sqrt(E*E -L*L -L));
 		yRmax(E);
 		fprintf(outboundary, "%e\t%e\n", E, y[1]);
 		
-		printf("%e\t%e\t%e\n", E, temp, y[1]);
+		printf("%.11e\t%.11e\t%.11e\n", E, temp, y[1]);
 		fflush(stdout);
 		
 		if((temp*y[1])<0)
@@ -158,8 +162,8 @@ int main (int argc, char *argv[])
 			ye[1]=E;
 			printf("%e\t%e\n", ye[0], ye[1]);
 				fflush(stdout);
+			Zbisection(yRmax, ye, 1.0e-4);
 			EV = Zsecant(yRmax, ye, 1.0e-8);
-			//EV = Zbisection(yRmax, ye, 1.0e-8);
 			sprintf(out_file, "isotropic_HO/solution_%d_%.7lf.dat", L, EV);
 			print_solution(EV, X, out_file);
 		}

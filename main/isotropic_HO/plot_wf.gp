@@ -8,9 +8,9 @@ set terminal postscript eps enhanced color font 'Helvetica,10'
 #set log x
 set grid x
 set grid y
-set format '$%g$'
-set ylabel "$y(x)$"
-set xlabel "$E$"
+#set format '$%g$'
+set ylabel "y(x)"
+set xlabel "x"
 
 #unset colorbox
 
@@ -23,12 +23,12 @@ set style line 1 lt 2 lc rgb "red" lw 3
 
 
 
-#set xrange [1000:100000000]
+set xrange [0:7.5]
 #set title "Problema di Basilea - Singola precisione"
 unset key
 #set output 'plot_yRmaxE.tex'
-set output 'plot_yRmaxE.eps'
+set output 'solution_2_9.5000000.eps'
 
 #show style line
 
-plot '.dat' with linespoints ls 1
+plot 'solution_2_9.5000000.dat' with lines ls 1
