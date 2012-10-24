@@ -13,15 +13,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "schrnumerov.h"
+#include "numerov.h"
 #include "extras.h"
 
 
 /* "Normalization" constant */
 #define N 1.0e-2
 
-/* Increment and number of steps */
-//#define EMIN 3.5
 #define DE 0.007
 #define ESTEPS 1000
 

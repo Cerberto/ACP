@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = sph_HO
+MAIN = sph_HO GP_eq
 
 RANDOM = ranlxs ranlxd gauss expo rootexpo gaussalt symexpo symrootexpo
 
@@ -35,16 +35,16 @@ START = start utils
 
 EXTRAS = extras zeros
 
-SCHRNUMEROV = numerov
+NUMEROV = numerov
 
-MODULES = $(RANDOM) $(START) $(EXTRAS) $(INTEGRATION) $(SIMULATIONS) $(CLUSTER) $(RUNGEKUTTA) $(SCHRNUMEROV)
+MODULES = $(RANDOM) $(START) $(EXTRAS) $(INTEGRATION) $(SIMULATIONS) $(CLUSTER) $(RUNGEKUTTA) $(NUMEROV)
 
 
 # search path for modules
 
 MDIR = ../modules
 
-VPATH = $(MDIR)/random:$(MDIR)/start:$(MDIR)/extras:$(MDIR)/integration:$(MDIR)/simulations:$(MDIR)/cluster:$(MDIR)/plot:$(MDIR)/rungekutta:$(MDIR)/schrnumerov
+VPATH = $(MDIR)/random:$(MDIR)/start:$(MDIR)/extras:$(MDIR)/integration:$(MDIR)/simulations:$(MDIR)/cluster:$(MDIR)/plot:$(MDIR)/rungekutta:$(MDIR)/numerov
 
 
 # additional include directories
