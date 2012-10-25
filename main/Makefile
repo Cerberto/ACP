@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = jacobi # sph_HO GP_eq
+MAIN = GP_eq #jacobi sph_HO
 
 RANDOM = ranlxs ranlxd gauss expo rootexpo gaussalt symexpo symrootexpo
 

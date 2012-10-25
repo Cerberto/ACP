@@ -92,7 +92,9 @@ void saveandprint (double E, double *x, int dim, char *filename)
 	for(i=1; i<DIM; i++)		/* ATTENZIONE AGLI INDICI!! FALLI PARTIRE GIUSTI!! */
 	{
 		evol_GP(potential, rho, x, DIM, i, H, E);
+		pippo();
 		fprintf(output,"%.11e\t%.11e\n", r, x[1]);
+		pippo();
 		rho[i] = x[1]*x[1];		/* ATTENZIONE QUI!! COME E' RHO?!?! */
 		r += H;
 	};
@@ -153,8 +155,8 @@ int main (int argc, char *argv[])
 				Zbisection(yRmax, ye, 1.0e-4);
 				EV = Zsecant(yRmax, ye, 1.0e-8);
 				printf("%.9e\n", EV);
-/*				sprintf(out_file, "GP/solution_%.7lf.dat", EV);
-				saveandprint(EV, X, out_file);  */
+//				sprintf(out_file, "GP/solution_%.7lf.dat", EV); 
+				saveandprint(EV, X, DIM, out_file);
 				break;
 			}
 			temp = y[1];

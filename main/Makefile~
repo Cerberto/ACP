@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = jacobi # sph_HO GP_eq
+MAIN = sph_HO #jacobi GP_eq
 
 RANDOM = ranlxs ranlxd gauss expo rootexpo gaussalt symexpo symrootexpo
 
@@ -48,14 +48,13 @@ VPATH = $(MDIR)/random:$(MDIR)/start:$(MDIR)/extras:$(MDIR)/integration:$(MDIR)/
 
 
 # additional include directories
-GSLPATH = /usr/include/gsl
 
-INCPATH = ../include:$(GSLPATH)
+INCPATH = ../include /usr/include
 
 
 # additional libraries to be included 
 
-LIBS = m
+LIBS = m gsl
 
 LIBPATH = 
 
