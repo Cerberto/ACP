@@ -38,7 +38,7 @@ double Zbisection (double (*f)(double), double *v, double accuracy)
 	do{
 		i++;
 		printf("Iteration %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
-		x = v[0] + (v[0]-v[1])*f0/(f1-f0);
+		x = (v[0]+v[1])/2.0;
 		fx = f(x);
 		
 		if((f0*fx)<0)
@@ -77,7 +77,7 @@ double Zsecant (double (*f)(double), double *v, double accuracy)
 		if((f0*fx)<0)
 		{	v[1]=x;   f1 = fx;   continue;  }
 		
-		if((f0*fx)>0)
+		else if((f0*fx)>0)
 		{	v[0]=x;   f0 = fx;   continue;  }
 
 		else
