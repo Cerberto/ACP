@@ -75,10 +75,10 @@ double Zsecant (double (*f)(double), double *v, double accuracy)
 		fx = f(x);
 		
 		if((f0*fx)<0)
-		{	v[1]=x;   f1 = fx;   continue;  }
+		{	v[1]=x;   f1 = fx;  }
 		
-		if((f0*fx)>0)
-		{	v[0]=x;   f0 = fx;   continue;  }
+		else if((f0*fx)>0)
+		{	v[0]=x;   f0 = fx;  }
 
 		else
 			break;

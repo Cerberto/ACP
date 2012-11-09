@@ -27,8 +27,8 @@ set xrange [0:7.5]
 #set title "Problema di Basilea - Singola precisione"
 unset key
 #set output 'plot_yRmaxE.tex'
-set output 'solution_2_9.5000000.eps'
+set output 'solution_0_3.5000000.eps'
 
 #show style line
 
-plot 'solution_2_9.5000000.dat' with lines ls 1
+plot 'solution_0_3.5000000.dat' using 1:($2/$1) with lines ls 1

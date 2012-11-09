@@ -13,6 +13,9 @@
 /* "Normalization" constant */
 #define N 1.0e-2
 
+/* Number of particles */
+#define NPAR 1
+
 /* length and energy steps */
 #define H 1.0e-5
 #define Dmu 0.007
@@ -46,6 +49,7 @@ int main (int argc, char *argv[])
 		printf("\nMissing input parameters: please specify precision needed for the eigenvalue.\n\n");
 		exit(EXIT_FAILURE);
 	}
+	printf("\nScattering length = %lf\n\n", ALPHA);
 	
 	int counter = 0;
 	double mu;
@@ -101,10 +105,10 @@ int main (int argc, char *argv[])
 				Zbisection(yRmax, ye, 1.0e-4);		// bisection method up to a certain precision
 				EV = Zsecant(yRmax, ye, 1.0e-8);	// refine search with secant method
 				printf("%.9e\n", EV);
-/*				sprintf(path, "GP/GP_%.4lf", ALPHA);
+			/*	sprintf(path, "GP/GP_%.4lf", ALPHA);
 				sprintf(out_file, "/solution_%.4lf_%.7lf.dat", ALPHA, EV);
 				strcat(path, out_file);
-				saveandprint(EV, y, DIM, path);*/
+				saveandprint(EV, y, DIM, path);	*/
 				save(EV, y, DIM);
 				printf("%d ... muOLD = %.11e, \t EV = %.11e\n", counter, muOLD, EV);
 				fprintf(output_ev, "%d\t%.11e\n", counter, EV);		// print values of mu's as function of iterations
@@ -117,7 +121,7 @@ int main (int argc, char *argv[])
 	}while(fabs(muOLD-EV) > epsilon);
 	
 	sprintf(path, "GP/GP_%.4lf", ALPHA);
-	sprintf(out_file, "/ultimate_%.4lf_%.7lf.dat", ALPHA, EV);
+	sprintf(out_file, "/ultimate.dat");
 	strcat(path, out_file);
 	saveandprint(EV, y, DIM, path);
 	
@@ -129,7 +133,7 @@ void gauss_init (double *v, int dim)
 {
 	int i;
 	for(i=0; i<dim; i++)
-		v[i] = exp(i*i*H*H);
+		v[i] = exp(0.5*i*i*H*H)/sqrt(2*PI);
 }
 
 
@@ -152,13 +156,20 @@ double yRmax (double E)
 void saveandprint (double E, double *x, int dim, char *filename)
 {
 	int i;
+	double S=0;
 	FILE *output;
 		output = fopen(filename, "w");
 	x[0] = H;	x[1] = 2*H;
 	evol_GP(potential, rho, ALPHA, x, DIM, H, E);	
-	for(i=1; i<DIM; i++)		/* ATTENZIONE AGLI INDICI!! FALLI PARTIRE GIUSTI!! */
+	
+	/* Normalization of wave function */
+	for(i=0; i<dim; i++)
+		S += x[i]*x[i];
+	S *= 4*PI*H;
+	
+	for(i=1; i<DIM; i++)
 	{
-		rho[i] = x[i]/(double)(i*H);	rho[i] *= rho[i];
+		rho[i] = x[i]/(double)((i+1)*H);	rho[i] *= (NPAR*rho[i]/S);
 		fprintf(output,"%.11e\t%.11e\t%.11e\n", i*H, x[i], rho[i]);
 	};
 	
@@ -168,9 +179,16 @@ void saveandprint (double E, double *x, int dim, char *filename)
 void save (double E, double *x, int dim)
 {
 	int i;
+	double S=0;
 	x[0] = H;	x[1] = 2*H;
-	evol_GP(potential, rho, ALPHA, x, DIM, H, E);	
-	for(i=1; i<DIM; i++)
-	{	rho[i] = x[i]/(double)(i*H);	rho[i] *= rho[i];	};
+	evol_GP(potential, rho, ALPHA, x, DIM, H, E);
+	
+	/* Normalization of wave function */
+	for(i=0; i<dim; i++)
+		S += x[i]*x[i];
+	S *= 4*PI*H;
+	
+	for(i=1; i<dim; i++)
+	{	rho[i] = x[i]/(double)((i+1)*H);	rho[i] *= (NPAR*rho[i]/S);	};
 }
 
