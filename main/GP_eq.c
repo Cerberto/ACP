@@ -22,7 +22,7 @@ int NPAR;
 double ALPHA;
 
 /* Mixing constant (for the new density) */
-#define BETA 0.5
+#define BETA 0.4
 
 /* Maximum radius */
 #define RMAX 7.0
