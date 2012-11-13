@@ -13,18 +13,19 @@
 /* "Normalization" constant */
 #define N 1.0e-2
 
-/* Number of particles */
-#define NPAR 1
-
 /* length and energy steps */
 #define H 1.0e-5
 #define Dmu 0.01
 
-/* Interaction constant */
-#define ALPHA 0.5
+/* Number of particles and scattering length */
+int NPAR;
+double ALPHA;
+
+/* Mixing constant (for the new density) */
+#define BETA 0.5
 
 /* Maximum radius */
-#define RMAX 5.0
+#define RMAX 7.0
 
 double PI = 4*atan(1.0);
 
@@ -45,22 +46,22 @@ double normalization(double *v, int dim);
 
 int main (int argc, char *argv[])
 {
-	if(argc<2)
+	if(argc<4)
 	{
-		printf("\nMissing input parameters: please specify precision needed for the eigenvalue.\n\n");
+		printf("\nMissing input parameters: please specify precision needed for the eigenvalue, number of particles and scattering length.\n\n");
 		exit(EXIT_FAILURE);
 	}
-	printf("\nScattering length = %lf.\n", ALPHA);
-	printf("\n%d particles.\n\n", NPAR);
 	
 	int counter = 0;
 	double mu;
 	double muMIN, epsilon, EV, muOLD;
+	epsilon	= atof(argv[1]);
+	NPAR	= atoi(argv[2]);
+	ALPHA	= atof(argv[3]);
 		if(ALPHA < 0)
 			muMIN = 4*PI*ALPHA + 1.0e-05;
 		else
 			muMIN = 1.0e-05;
-	epsilon	= atof(argv[1]);
 	EV		= -100.0;
 	muOLD	= -1000.0;
 	double temp		= 0;
@@ -86,8 +87,11 @@ int main (int argc, char *argv[])
 		FILE *output_ev;
 		output_ev = fopen(path, "w");
 	
-	gauss_init(rho, DIM);
+	printf("\nScattering length = %lf.\n", ALPHA);
+	printf("\n%d particles.\n\n", NPAR);
 	
+	gauss_init(rho, DIM);
+
 	do{
 		counter++;
 		mu = muMIN;
@@ -103,6 +107,7 @@ int main (int argc, char *argv[])
 			{
 				ye[0]=mutemp;
 				ye[1]=mu;
+				printf("Before search: %e\t%e\t%e\t%e\n", mutemp, mu, temp, y[DIM-1]);
 				muOLD = EV;
 				Zbisection(yRmax, ye, 1.0e-4);		// bisection method up to a certain precision
 				EV = Zsecant(yRmax, ye, 1.0e-8);	// refine search with secant method
@@ -125,7 +130,9 @@ int main (int argc, char *argv[])
 	sprintf(path, "GP/GP_%.4lf_%d", ALPHA, NPAR);
 	sprintf(out_file, "/ultimate.dat");
 	strcat(path, out_file);
+	printf("normalization = %.12lf\n\n", normalization(rho,DIM));
 	saveandprint(EV, y, DIM, path);
+	printf("normalization = %.12lf\n\n", normalization(rho,DIM));
 	
 	exit(EXIT_SUCCESS);
 }
@@ -138,7 +145,7 @@ void gauss_init (double *v, int dim)
 	for(i=0; i<dim; i++)
 		v[i] = exp(i*i*H*H);
 	double S = normalization(v,dim);
-	for(i=0; i<dim; i++)
+	for(i=dim-1; i>-1; i--)
 		v[i] *= (NPAR/S);
 }
 
@@ -163,6 +170,7 @@ void saveandprint (double E, double *x, int dim, char *filename)
 {
 	int i;
 	double S=0;
+	double new;
 	FILE *output;
 		output = fopen(filename, "w");
 	x[0] = H;	x[1] = 2*H;
@@ -171,7 +179,7 @@ void saveandprint (double E, double *x, int dim, char *filename)
 	/* Normalization of wave function */
 	for(i=dim-1; i>-1; i--)
 		S += x[i]*x[i];
-	S *= 4*PI*H;		/* CI VUOLE IL 4*PI ?!?! */
+	S *= 4*PI*H;
 	
 	for(i=0; i<DIM; i++)
 	{
@@ -187,16 +195,20 @@ void save (double E, double *x, int dim)
 {
 	int i;
 	double S=0;
+	double new;
 	x[0] = H;	x[1] = 2*H;
 	evol_GP(potential, rho, ALPHA, x, DIM, H, E);
 	
 	/* Normalization of wave function */
 	for(i=dim-1; i>-1; i--)
 		S += x[i]*x[i];
-	S *= 4*PI*H;		/* CI VUOLE IL 4*PI ?!?! */
+	S *= 4*PI*H;
 	
 	for(i=0; i<dim; i++)
-	{	rho[i] = x[i]/(i*H+H);	rho[i] *= (NPAR*rho[i]/S);	};
+	{
+		new = x[i]/(i*H+H);	new *= (NPAR*new/S);
+		rho[i] = BETA*rho[i] + (1-BETA)*new;
+	};
 }
 
 double normalization (double *v, int dim)
@@ -205,6 +217,6 @@ double normalization (double *v, int dim)
 	double S = 0;
 	for(i=dim-1; i>-1; i--)
 		S += v[i]*(i*H+H)*(i*H+H);
-	return 4*PI*S*H;		/* CI VUOLE IL 4*PI ?!?! */
+	return 4*PI*S*H;
 }
 

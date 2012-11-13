@@ -27,7 +27,7 @@ double Zbisection (double (*f)(double), double *v, double accuracy)
 	double x, f0, f1, fx;
 	f0 = f(v[0]);
 	f1 = f(v[1]);
-	printf("Iteration %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
+	printf("Bisection %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
 	
 	if(f0==f1 || (f0*f1>0))
 	{
@@ -37,18 +37,19 @@ double Zbisection (double (*f)(double), double *v, double accuracy)
 	
 	do{
 		i++;
-		printf("Iteration %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
 		x = (v[0]+v[1])/2.0;
 		fx = f(x);
 		
 		if((f0*fx)<0)
-		{	v[1]=x;   f1 = fx;   continue;  }
+		{	v[1]=x;   f1 = fx;  }
 		
 		else if((f0*fx)>0)
-		{	v[0]=x;   f0 = fx;   continue;  }
+		{	v[0]=x;   f0 = fx;  }
 
 		else
 			break;
+
+		printf("Bisection %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
 
 	}while(fabs(v[0]-v[1]) > accuracy);
 	
@@ -61,7 +62,7 @@ double Zsecant (double (*f)(double), double *v, double accuracy)
 	double x, f0, f1, fx;
 	f0 = f(v[0]);
 	f1 = f(v[1]);
-	printf("Iteration %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
+	printf("Secant   %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
 	if((f0==f1) || (f0*f1>0))
 	{
 		printf("\nIt is impossible to use the secant method in finding the zeros of the function!\n\n");
@@ -70,7 +71,6 @@ double Zsecant (double (*f)(double), double *v, double accuracy)
 	
 	do{
 		i++;
-		printf("Iteration %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
 		x = v[0] + (v[0]-v[1])*f0/(f1-f0);
 		fx = f(x);
 		
@@ -82,6 +82,8 @@ double Zsecant (double (*f)(double), double *v, double accuracy)
 
 		else
 			break;
+
+		printf("Secant   %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
 
 	}while(fabs(v[0]-v[1]) > accuracy);
 	
