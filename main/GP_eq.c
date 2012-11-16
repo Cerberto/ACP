@@ -170,7 +170,6 @@ void saveandprint (double E, double *x, int dim, char *filename)
 {
 	int i;
 	double S=0;
-	double new;
 	FILE *output;
 		output = fopen(filename, "w");
 	x[0] = H;	x[1] = 2*H;

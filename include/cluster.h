@@ -5,16 +5,18 @@
 
 typedef struct
 {
-	int Dim;		/* Dimensione del vettore */
-	double Mean;	/* Media degli elementi del vettore */
-	double Sigma;	/* Varianza della media */
-	double *Vec;	/* Vettore degli elementi del campione */
+	double *Vec;	/* Array of data */
+	int Dim;		/* Array length */
+	double Mean;	/* Mean value on the array */
+	double Sigma;	/* Variance of the mean */
 } cluster;
 
 
 #ifndef JACKKNIFE_C
 extern void clusterJK(cluster *C);
 extern void cluster_init(cluster *C, int dim);
+extern cluster functionJK (double (*f)(double), cluster *X);
 #endif
 
 #endif
+

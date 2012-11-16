@@ -25,7 +25,7 @@ RANDOM = ranlxs ranlxd gauss expo rootexpo gaussalt symexpo symrootexpo
 
 INTEGRATION = integrate methods gaussmom pigreco
 
-SIMULATIONS = harmosc
+SIMULATIONS = harmosc metropolis
 
 RUNGEKUTTA = ode2
 

@@ -8,17 +8,11 @@
  * 
  * 
  * Le routines accessibili dall'esterno sono:
- * _ cold_init -> inizializzazione "a freddo" di un vettore (elementi nulli);
- * 
- * _ hot_init -> inizializzazione "a caldo" di un vettore (elementi random);
- *
  * _ HOeAction -> azione euclidea dell'oscillatore armonico;
  * 
  * _ HOmetropolis -> algoritmo di scelta di Metropolis (restituisce la
  * 		variazione di azione conseguente la scelta);
- * 
- * _ autocorrelation -> calcolo dell'autocorrelazione di dati di un array;
- * 
+ *
  * _ DeltaE -> calcolo del gap di energia (restituisce una struttura cluster
  * 		jackknife contenente media ed errore);
  * 
@@ -46,35 +40,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "simulations.h"
 #include "random.h"
 #include "cluster.h"
 
 #define M 1.0
 #define OMEGA 1.0
 #define DELTA 4.0
-
-
-/* Inizializzazione a freddo */
-void cold_init(double *v, int dim)
-{
-	int i;
-	for(i=0; i<dim; i++)
-		v[i] = 0;
-}
-
-
-/* Inizializzazione a caldo */
-void hot_init(double *v, int dim)
-{
-	int i;
-	double *temp;
-	temp = malloc(dim*sizeof(double));
-	ranlxd(temp,dim);
-	for(i=0; i<dim; i++)
-		v[i] = 50.0*(2*temp[i] - 1);
-	
-	free(temp);
-}
 
 
 /* Potenziale parabolico */
@@ -138,31 +110,6 @@ double HOmetropolis (double* state, int state_dim)
 	return DS;
 }
 
-/* Autocorrelazione dei dati contenuti in x */
-void autocorrelation(double *x, int t, double *v, int dim, int steps)
-{
-	int i;
-	double *temp1, *temp2, *temp3;
-	temp1 = malloc(dim*sizeof(double));
-	temp2 = malloc(dim*sizeof(double));
-	temp3 = malloc(dim*sizeof(double));
-	cold_init(temp1, dim);
-	cold_init(temp2, dim);
-	cold_init(temp3, dim);
-	
-	for(i=0; (i+dim*t)<(steps*dim); i++)
-	{
-		temp3[i%dim] += x[i]*x[i+t*dim]/(double)(steps - t);
-		temp1[i%dim] += x[i]/(double)(steps - t);
-		temp2[i%dim] += x[i]*x[i]/(double)(steps - t);
-	}
-	for(i=0; i<dim; i++)
-		v[i] = (temp3[i] - temp1[i]*temp1[i])/(temp2[i] - temp1[i]*temp1[i]);
-	
-	free(temp1);
-	free(temp2);
-	free(temp3);
-}
 
 
 /* Gap di energia */
@@ -224,6 +171,7 @@ cluster MatrixElementX(cluster *DE, cluster *Corr, int t, int N)
 /* Funzione radice quadrata: media e varianza su un campione */
 cluster sqrt_jk (cluster *X)
 {
+/*
 	int i;
 	double temp = 0;
 	int dim = X->Dim;
@@ -238,4 +186,6 @@ cluster sqrt_jk (cluster *X)
 	result.Sigma = temp;
 	
 	return result;
+*/
+	return functionJK(sqrt, X);
 }

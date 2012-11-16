@@ -21,8 +21,8 @@
 #include "cluster.h"
 
 
-/* Assegnamento di media e varianza della media */
-void clusterJK(cluster *C)
+/* Assignment of mean value and variance in a cluster structure */
+void clusterJK (cluster *C)
 {
 	int i;
 	int dim = C->Dim;
@@ -36,15 +36,38 @@ void clusterJK(cluster *C)
 	
 	C->Sigma = 0;
 	for(i=0; i<dim; i++)
-		C->Sigma += ((double)(dim - 1))/((double)dim)*(C->Vec[i] - C->Mean)*(C->Vec[i] - C->Mean);
+	{
+		C->Sigma += (C->Vec[i] - C->Mean)*(C->Vec[i] - C->Mean);
+		C->Sigma *= ((double)(dim - 1))/((double)dim);
+	}
 }
 
 
-/* Inizializzazione di un cluster jackknife */
-void cluster_init(cluster *C, int dim)
+/* Cluster jackknive initialization */
+void cluster_init (cluster *C, int dim)
 {
 	C->Dim	= dim;
 	C->Mean	= 0;
 	C->Sigma= 0;
 	C->Vec	= malloc(dim*sizeof(double));
+}
+
+
+cluster functionJK (double (*f)(double), cluster *X)
+{
+	int i;
+	double temp = 0;
+	int dim = X->Dim;
+	cluster result;
+	cluster_init(&result,dim);
+	result.Mean = f(X->Mean);
+	for(i=0; i<dim; i++)
+	{
+		result.Vec[i] = f(X->Vec[i]);
+		temp += (result.Vec[i] - result.Mean)*(result.Vec[i] - result.Mean);
+		temp *= ((double)(dim - 1)/(double)dim);
+	}
+	result.Sigma = temp;
+	
+	return result;
 }
