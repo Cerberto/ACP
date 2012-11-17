@@ -183,7 +183,7 @@ void saveandprint (double E, double *x, int dim, char *filename)
 	for(i=0; i<DIM; i++)
 	{
 		rho[i] = x[i]/(i*H+H);	rho[i] *= (NPAR*rho[i]/S);
-		fprintf(output,"%.11e\t%.11e\t%.11e\n", i*H, x[i], rho[i]);
+		fprintf(output,"%.11e\t%.11e\t%.11e\n", (i+1)*H, x[i], rho[i]);
 	};
 	
 	fclose(output);
