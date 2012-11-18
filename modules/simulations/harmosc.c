@@ -111,6 +111,32 @@ double HOmetropolis (double* state, int state_dim)
 }
 
 
+void HOautocorrelation(double *x, int t, double *v, int dim, int steps)
+{
+	int i;
+	double *temp1, *temp2, *temp3;
+	temp1 = malloc(dim*sizeof(double));
+	temp2 = malloc(dim*sizeof(double));
+	temp3 = malloc(dim*sizeof(double));
+	cold_init(temp1, dim);
+	cold_init(temp2, dim);
+	cold_init(temp3, dim);
+	
+	for(i=0; (i+dim*t)<(steps*dim); i++)
+	{
+		temp3[i%dim] += x[i]*x[i+t*dim]/(double)(steps - t);
+		temp1[i%dim] += x[i]/(double)(steps - t);
+		temp2[i%dim] += x[i]*x[i]/(double)(steps - t);
+	}
+	for(i=0; i<dim; i++)
+		v[i] = (temp3[i] - temp1[i]*temp1[i])/(temp2[i] - temp1[i]*temp1[i]);
+	
+	free(temp1);
+	free(temp2);
+	free(temp3);
+}
+
+
 
 /* Gap di energia */
 cluster DeltaE(cluster *A, cluster *B, cluster *C)
