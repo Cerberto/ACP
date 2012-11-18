@@ -14,7 +14,7 @@
 #define NTH		200		/* number of sweeps needed for thermalization */
 #define SWEEPS	1000000	/* number of "effective" sweeps */
 #define NSKIP	100		/* number of sweeps skipped in order to avoid correlation */
-#define TMAX	20		/* maximum time delay for autocorrelation */
+#define TMAX	50		/* maximum time delay for autocorrelation */
 
 
 /* Parameters for the trial wave functions */
@@ -81,7 +81,7 @@ int main (int argc, char *argv[])
 	}
 	
 	FILE *therm_file, *integral_file, *autocorr_file;
-		therm_file		= fopen(therm_name, "w");
+		//therm_file		= fopen(therm_name, "w");
 		integral_file	= fopen(integral_name, "w");
 		autocorr_file	= fopen(autocorr_name, "w");
 
@@ -93,9 +93,10 @@ int main (int argc, char *argv[])
 	/* For each value of the parameter of the trial wave function
 	 * expectation value of the local energy is estimated
 	 **/
-	for(sigma=0.5; sigma<1.6; sigma+=0.05)
+	printf("Parameter of the trial wave function\n");
+	for(sigma=0.5; sigma<1.6; sigma+=0.033)
 	{	
-		printf("parameter = %lf\n", sigma);
+		printf("\t%lf\n", sigma);
 		
 		/* Initialization of the randomizer */
 		srand(time(NULL));
@@ -110,8 +111,8 @@ int main (int argc, char *argv[])
 		for(sweep=0; sweep<NTH; sweep++)
 		{
 			metropolis(probability, x, 1, delta);
-			if((sigma-0.5)/0.05 == 0)
-				fprintf(therm_file, "%d\t%.10e\n", sweep, x[0]);
+			/*if((sigma-0.5)/0.033 == 0)
+				fprintf(therm_file, "%d\t%.10e\n", sweep, x[0]);*/
 		}
 		
 		/* From now on data are collected and used for the estimation */
@@ -124,10 +125,12 @@ int main (int argc, char *argv[])
 			* (apart from those needed for thermalization) are stored in the
 			* autocorr array (in order to compute the autocorrelation).
 			**/
-			autocorr[sweep] = x[0];
 			
-			if((sigma-0.5)/0.05 == 0)
+			/*if((sigma-0.5)/0.033 == 0)
+			{
+				autocorr[sweep] = x[0];
 				fprintf(therm_file, "%d\t%.10e\n", sweep+NTH, x[0]);
+			}*/
 			
 			/* In order to get independent samples we take into account just
 			 * the configuration every NSKIP sweeps; data are stored in an array
@@ -135,11 +138,11 @@ int main (int argc, char *argv[])
 			 **/
 			if((sweep+1)%NSKIP==0)
 			{
-				exp_value.Vec[i] = WF(x[0])/WF(x[0]);
+				exp_value.Vec[i] = H_WF(x[0])/WF(x[0]);
 				i++;
 			}
 		}
-		
+				
 		/* Expectation value and variance of the integral are computed
 		 * with the jackknife re-sampling method
 		 **/
@@ -147,7 +150,10 @@ int main (int argc, char *argv[])
 		fprintf(integral_file, "%lf\t%.10e\t%.10e\n", sigma, exp_value.Mean, exp_value.Sigma);
 	}
 	
-	fclose(therm_file);
+	for(i=0; i<TMAX+1; i++)
+			fprintf(autocorr_file, "%d\t%e\n", i, autocorrelation(autocorr, i, N));
+	
+	//fclose(therm_file);
 	fclose(autocorr_file);
 	fclose(integral_file);
 	free(autocorr);
@@ -158,11 +164,11 @@ int main (int argc, char *argv[])
 
 
 double trial_WF_gauss (double x)
-{	return exp(x*x/(2*sigma*sigma)); }
+{	return exp(-x*x/(2*sigma*sigma)); }
 
 
 double H_trial_WF_gauss (double x)
-{	return exp(x*x/(2*sigma*sigma))*(sigma*sigma + x*x*(pow(sigma,4)-1))/2/pow(sigma,4);  }
+{	return exp(-x*x/(2*sigma*sigma))*(sigma*sigma + x*x*(pow(sigma,4)-1))/2/pow(sigma,4);  }
 
 
 double trial_WF_agnesi (double x)
@@ -170,7 +176,7 @@ double trial_WF_agnesi (double x)
 
 
 double H_trial_WF_agnesi (double x)
-{	return (2*sigma*sigma + x*x*((x*x+sigma*sigma)*(x*x+sigma*sigma) - 6))/(2*((x*x+sigma*sigma)*(x*x+sigma*sigma)*(x*x+sigma*sigma))); }
+{	return (2*sigma*sigma + x*x*((x*x+sigma*sigma)*(x*x+sigma*sigma) - 6))/(2*((x*x+sigma*sigma)*(x*x+sigma*sigma)*(x*x + sigma*sigma))); }
 
 
 double probability (double *x)
