@@ -7,15 +7,15 @@
 #include "random.h"
 #include "simulations.h"
 #include "cluster.h"
-
 #include "extras.h"
 
-#define delta	0.7		/* hypercube side */
 #define NTH		200		/* number of sweeps needed for thermalization */
-#define SWEEPS	1000000	/* number of "effective" sweeps */
+#define SWEEPS	100000	/* number of "effective" sweeps */
 #define NSKIP	100		/* number of sweeps skipped in order to avoid correlation */
-#define TMAX	50		/* maximum time delay for autocorrelation */
+#define TMAX	150		/* maximum time delay for autocorrelation */
 
+/* hypercube side */
+double delta;
 
 /* Parameters for the trial wave functions */
 double sigma;
@@ -35,9 +35,9 @@ double probability (double *x);
 
 
 
-int main (int argc, char *argv[])
-{	
+int main (int argc, char *argv[]){	
 	int sweep, choice, i;
+	double acc_ratio;
 	double x[1];
 	double sigma_min, sigma_max;
 	/* double Sum;  Summation for the binning method */
@@ -88,7 +88,7 @@ int main (int argc, char *argv[])
 	
 	FILE *distrib_file, *therm_file, *integral_file, *autocorr_file;
 		distrib_file	= fopen(distrib_name, "w");
-		//therm_file		= fopen(therm_name, "w");
+		therm_file		= fopen(therm_name, "w");
 		integral_file	= fopen(integral_name, "w");
 		autocorr_file	= fopen(autocorr_name, "w");
 
@@ -101,10 +101,11 @@ int main (int argc, char *argv[])
 	/* For each value of the parameter of the trial wave function
 	 * expectation value of the local energy is estimated
 	 **/
-	printf("Parameter of the trial wave function\n");
-	for(sigma=sigma_min; sigma<sigma_max; sigma+=0.033)
-	{	
-		printf("\t%lf\n", sigma);
+	printf("Parameter of the trial wave function and acceptance\n");
+	for(sigma=sigma_min; sigma<sigma_max; sigma+=0.033){
+		
+		printf("\t%lf\t\t", sigma);
+		delta = 3.5*sigma;
 		
 		/* Initialization of the randomizer */
 		srand(time(NULL));
@@ -116,18 +117,17 @@ int main (int argc, char *argv[])
 		/* Process is left free for a certain number NTH of sweeps:
 		 * no data are used for estimating the integral
 		 **/
-		for(sweep=0; sweep<NTH; sweep++)
-		{
+		for(sweep=0; sweep<NTH; sweep++){
 			metropolis(probability, x, 1, delta);
-			/*if((sigma-sigma_min)/0.033 == 0)
-				fprintf(therm_file, "%d\t%.10e\n", sweep, x[0]);*/
+			if((int)((sigma-sigma_min)/0.033) == 5)	
+				fprintf(therm_file, "%d\t%.10e\n", sweep, x[0]);
 		}
 		
 		/* From now on data are collected and used for the estimation */
 		i=0;
-		for(sweep=0; sweep<SWEEPS; sweep++)
-		{
-			metropolis(probability, x, 1, delta);
+		acc_ratio = 0;
+		for(sweep=0; sweep<SWEEPS; sweep++){
+			acc_ratio += metropolis(probability, x, 1, delta);
 			
 			/* All data corresponding to each sweep of the metropolis algorithm
 			* (apart from those needed for thermalization) are stored in the
@@ -135,24 +135,25 @@ int main (int argc, char *argv[])
 			* for a particular value of the parameter sigma
 			**/
 			
-			if((sigma-sigma_min)/0.033 == 0)
-			{
+			if((int)((sigma-sigma_min)/0.033) == 5){
 				autocorr[sweep] = x[0];
 				fprintf(distrib_file, "%.10e\n", x[0]);
-			//	fprintf(therm_file, "%d\t%.10e\n", sweep+NTH, x[0]);
+				fprintf(therm_file, "%d\t%.10e\n", sweep+NTH, x[0]);
 			}
 			
 			/* In order to get independent samples we take into account just
 			 * the configuration every NSKIP sweeps; data are stored in an array
 			 * contained in a jackknife structure.
 			 **/
-			if((sweep+1)%NSKIP==0)
-			{
+			if((sweep+1)%NSKIP==0){
 				exp_value.Vec[i] = H_WF(x[0])/WF(x[0]);
 				i++;
 			}
 		}
-				
+		printf("%.2lf\n", acc_ratio/SWEEPS);
+		if((int)((sigma-sigma_min)/0.033) == 5)
+			printf("\t\tPrinted something on file, to check the distribution.\n");
+			
 		/* Expectation value and variance of the integral are computed
 		 * with the jackknife re-sampling method
 		 **/
@@ -163,7 +164,7 @@ int main (int argc, char *argv[])
 	for(i=0; i<TMAX+1; i++)
 			fprintf(autocorr_file, "%d\t%e\n", i, autocorrelation(autocorr, i, N));
 	
-	//fclose(therm_file);
+	fclose(therm_file);
 	fclose(distrib_file);
 	fclose(autocorr_file);
 	fclose(integral_file);

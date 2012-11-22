@@ -18,8 +18,8 @@
 
 
 $step = 100;
-$x_min = -4;
-$x_max = 4;
+$x_min = -1.5;
+$x_max = 1.5;
 
 $dx = ($x_max - $x_min)/$step;
 

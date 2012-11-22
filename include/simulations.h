@@ -18,7 +18,7 @@ extern cluster sqrt_jk (cluster *X);
 extern double autocorrelation (double *x, int t, int dim);
 extern void cold_init (double *v, int dim);
 extern void hot_init (double *v, int dim);
-extern void metropolis (double (*P)(double *), double *state, int state_dim, double delta);
+extern double metropolis (double (*P)(double *), double *state, int state_dim, double delta);
 #endif
 
 #endif
