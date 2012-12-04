@@ -31,7 +31,7 @@ double (*WF)(double x);
 double (*H_WF)(double x);
 
 /* (Non normalized) probability distribution */
-double probability (double *x);
+double probability (double *x, int dim);
 
 
 
@@ -191,5 +191,5 @@ double H_trial_WF_agnesi (double x)
 {	return (2*sigma*sigma + x*x*((x*x+sigma*sigma)*(x*x+sigma*sigma) - 6))/(2*((x*x+sigma*sigma)*(x*x+sigma*sigma)*(x*x + sigma*sigma))); }
 
 
-double probability (double *x)
+double probability (double *x, int dim)
 {	return WF(x[0])*WF(x[0]);  }

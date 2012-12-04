@@ -49,7 +49,7 @@ double autocorrelation(double *x, int t, int dim){
 
 
 /* Routine that executes a sweep of the Metropolis algorithm */
-double metropolis (double (*P)(double *), double *state, int state_dim, double delta){
+double metropolis (double (*P)(double *, int), double *state, int state_dim, double delta){
 	int i;
 	double S = 0;
 	double swap, x_new, acceptance;
@@ -60,9 +60,9 @@ double metropolis (double (*P)(double *), double *state, int state_dim, double d
 		x_new = state[i] + delta*(u[0] - 0.5);
 		swap = state[i];
 		state[i] = x_new;
-			acceptance = P(state);
+			acceptance = P(state, state_dim);
 		state[i] = swap;
-			acceptance /= P(state);
+			acceptance /= P(state, state_dim);
 		
 		if(acceptance >= u[1]){
 			state[i] = x_new;
