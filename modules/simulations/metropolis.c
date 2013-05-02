@@ -10,7 +10,8 @@
 #include "extras.h"
 
 /* Cold initialization */
-void cold_init(double *v, int dim){
+void cold_init(double *v, int dim)
+{
 	int i;
 	for(i=0; i<dim; i++)
 		v[i] = 0;
@@ -18,7 +19,8 @@ void cold_init(double *v, int dim){
 
 
 /* Hot initialization */
-void hot_init(double *v, int dim){
+void hot_init(double *v, int dim)
+{
 	int i;
 	double *temp;
 	temp = malloc(dim*sizeof(double));
@@ -32,13 +34,15 @@ void hot_init(double *v, int dim){
 
 
 /* Autocorrelation of data in an array */
-double autocorrelation(double *x, int t, int dim){
+double autocorrelation(double *x, int t, int dim)
+{
 	int i;
 	double temp1 = 0;
 	double temp2 = 0;
 	double temp3 = 0;
 
-	for(i=0; i<(dim-t); i++){
+	for(i=0; i<(dim-t); i++)
+	{
 		temp3 += x[i]*x[i+t]/(double)(dim - t);
 		temp1 += x[i]/(double)(dim - t);
 		temp2 += x[i]*x[i]/(double)(dim - t);
@@ -49,25 +53,23 @@ double autocorrelation(double *x, int t, int dim){
 
 
 /* Routine that executes a sweep of the Metropolis algorithm */
-double metropolis (double (*P)(double *, int), double *state, int state_dim, double delta){
+void metropolis (double (*P)(double *), double *state, int state_dim, double delta)
+{
 	int i;
-	double S = 0;
 	double swap, x_new, acceptance;
 	double u[2];
 
-	for(i=0; i<state_dim; i++){
+	for(i=0; i<state_dim; i++)
+	{
 		ranlxd(u,2);
 		x_new = state[i] + delta*(u[0] - 0.5);
 		swap = state[i];
 		state[i] = x_new;
-			acceptance = P(state, state_dim);
+			acceptance = P(state);
 		state[i] = swap;
-			acceptance /= P(state, state_dim);
+			acceptance /= P(state);
 		
-		if(acceptance >= u[1]){
+		if(acceptance >= u[1])
 			state[i] = x_new;
-			S += 1/((double)state_dim);
-		}
 	}
-	return S;
 }
