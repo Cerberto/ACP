@@ -8,8 +8,9 @@
  * The sub-routines are:
  * _ gauss_init -> initialize an array with gaussian values;
  * _ potential -> sets the local potential present in the GP equation;
- * _ yRmax -> gives the value of the solution of the Schrodinger-like
- * 		equation calculated with the Numerov method;
+ * _ yRmax -> gives the value at the end of the mesh of the solution of
+ * 		the Schrodinger-like equation calculated with the Numerov
+ * 		method;
  * _ save / saveandprint -> save the best solution found with Numerov
  * 		within an array;
  * _ normalization -> compute the norm of a wavefunction (supposing
@@ -19,12 +20,16 @@
 
 #define MAIN_PROGRAM
 
-	#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include "numerov.h"
 #include "extras.h"
+
+/**
+ *		Constant parameters to set properly
+ **/
 
 /* "Normalization" constant */
 #define N 1.0e-2
@@ -33,17 +38,26 @@
 #define H 1.0e-5
 #define Dmu 0.05
 
-/* Number of particles and scattering length */
-int NPAR;
-double ALPHA;
+/* accuracy for bisection and secant methods */
+#define B_ACC 1.0e-4
+#define S_ACC 1.0e-8
 
 /* Mixing constant (for the new density) */
-#define BETA 0.4
+#define BETA 0.3
 
 /* Maximum radius */
 #define RMAX 2.5
 
 double PI = 4*atan(1.0);
+
+
+/**
+ * 		External variables and sub-routines' definition
+ **/
+
+/* Number of particles and scattering length */
+int NPAR;
+double ALPHA;
 
 /* density and number of points of the mesh */
 double *rho; int DIM;
@@ -61,6 +75,11 @@ void saveandprint (double E, double *x, int dim, char *filename);
 
 double normalization(double *v, int dim);
 
+
+/**
+ * 		Main routine
+ **/
+ 
 int main (int argc, char *argv[])
 {
 	if(argc<4)
@@ -92,14 +111,15 @@ int main (int argc, char *argv[])
 	rho = malloc(DIM*sizeof(double));
 	y = malloc(DIM*sizeof(double));
 	
+	/* Extremes of the range where searching for the zero */
 	double *ye;
 	ye = malloc(2*sizeof(double));
 	
+	/* Preparing files and folder to save outputs */
 	char *path, *out_file, *command;
 		path		= malloc(100*sizeof(char));
 		out_file	= malloc(100*sizeof(char));
 		command		= malloc(100*sizeof(char));
-		
 	sprintf(path, "GP/GP_%.4lf_%d", ALPHA, NPAR);
 	sprintf(command, "mkdir %s", path);
 		system(command);
@@ -127,7 +147,7 @@ int main (int argc, char *argv[])
 			/* solution of the equation for a given value of mu */
 			yRmax(mu);
 		
-			/* compares value of solution at the end of the mesh with the previous result
+			/* compare value of solution at the end of the mesh with the previous result
 			 * and if it has opposite sign it looks for zero between the last two
 			 * values of mu */
 			if((temp*y[DIM-1])<0)
@@ -136,13 +156,10 @@ int main (int argc, char *argv[])
 				ye[1]=mu;
 				printf("Before search: %e\t%e\t%e\t%e\n", mutemp, mu, temp, y[DIM-1]);
 				muOLD = EV;
-				Zbisection(yRmax, ye, 1.0e-4);		// bisection method up to a certain precision
-				EV = Zsecant(yRmax, ye, 1.0e-8);	// refine search with secant method
-			/*	sprintf(path, "GP/GP_%.4lf", ALPHA);
-				sprintf(out_file, "/solution_%.4lf_%.7lf.dat", ALPHA, EV);
-				strcat(path, out_file);
-				saveandprint(EV, y, DIM, path);	*/
+				Zbisection(yRmax, ye, B_ACC);		// bisection method up to a certain precision
+				EV = Zsecant(yRmax, ye, S_ACC);		// refine search with secant method
 				save(EV, y, DIM);
+				
 				printf("\n%d ... OLD = %.11e, \t EV = %.11e\n\n", counter, muOLD, EV);
 				fprintf(output_ev, "%d\t%.11e\n", counter, EV);		// print values of the chemical potential as function of iterations
 				printf("normalization = %.12lf\n\n", normalization(rho,DIM));
@@ -154,6 +171,7 @@ int main (int argc, char *argv[])
 		}
 	}while(fabs(muOLD-EV) > epsilon);
 	
+	/* Set output files and save the final solution */
 	sprintf(path, "GP/GP_%.4lf_%d", ALPHA, NPAR);
 	sprintf(out_file, "/ultimate.dat");
 	strcat(path, out_file);
@@ -165,7 +183,10 @@ int main (int argc, char *argv[])
 }
 
 
-/* Normalized gaussian function on a mesh */
+/**
+ * 		Subroutines
+ **/
+
 void gauss_init (double *v, int dim)
 {
 	int i;
@@ -211,7 +232,7 @@ void saveandprint (double E, double *x, int dim, char *filename)
 	{
 		rho[i] = x[i]/(i*H+H);	rho[i] *= (NPAR*rho[i]/S);
 		fprintf(output,"%.11e\t%.11e\t%.11e\n", (i+1)*H, x[i], rho[i]);
-	};
+	}
 	
 	fclose(output);
 }
@@ -234,7 +255,7 @@ void save (double E, double *x, int dim)
 	{
 		new = x[i]/(i*H+H);	new *= (NPAR*new/S);
 		rho[i] = BETA*rho[i] + (1-BETA)*new;
-	};
+	}
 }
 
 double normalization (double *v, int dim)
