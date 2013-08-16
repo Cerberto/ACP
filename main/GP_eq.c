@@ -1,13 +1,29 @@
 
+/**
+ * 		File "GP_eq.c"
+ * 
+ * Self-consistent solution of the Gross-Pitaevskii equation
+ * with the Numerov method in the case of central potential.
+ * 
+ * The sub-routines are:
+ * _ gauss_init -> initialize an array with gaussian values;
+ * _ potential -> sets the local potential present in the GP equation;
+ * _ yRmax -> gives the value of the solution of the Schrodinger-like
+ * 		equation calculated with the Numerov method;
+ * _ save / saveandprint -> save the best solution found with Numerov
+ * 		within an array;
+ * _ normalization -> compute the norm of a wavefunction (supposing
+ * 		spherical symmetry) whose values are stored in an array.
+ * 
+ **/
 
 #define MAIN_PROGRAM
 
-#include <stdio.h>
+	#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include "numerov.h"
-
 #include "extras.h"
 
 /* "Normalization" constant */
@@ -15,7 +31,7 @@
 
 /* length and energy steps */
 #define H 1.0e-5
-#define Dmu 0.01
+#define Dmu 0.05
 
 /* Number of particles and scattering length */
 int NPAR;
@@ -25,7 +41,7 @@ double ALPHA;
 #define BETA 0.4
 
 /* Maximum radius */
-#define RMAX 7.0
+#define RMAX 2.5
 
 double PI = 4*atan(1.0);
 
@@ -38,6 +54,7 @@ double *y;
 void gauss_init (double *v, int dim);
 double potential (double x);
 double yRmax (double E);		/* Function that computes the value of the wave function at the end of the mesh */
+
 /* functions for saving (and printing) solutions */
 void save (double E, double *x, int dim);
 void saveandprint (double E, double *x, int dim, char *filename);
@@ -53,11 +70,15 @@ int main (int argc, char *argv[])
 	}
 	
 	int counter = 0;
+	
+	/* Chemical potential mu and its range of variation */
 	double mu;
 	double muMIN, epsilon, EV, muOLD;
-	epsilon	= atof(argv[1]);
+	epsilon	= atof(argv[1]);	// accuracy of chemical potential
+	
 	NPAR	= atoi(argv[2]);
 	ALPHA	= atof(argv[3]);
+	/* set the starting value of the chemical potential */
 		if(ALPHA < 0)
 			muMIN = 4*PI*ALPHA + 1.0e-05;
 		else
@@ -92,9 +113,15 @@ int main (int argc, char *argv[])
 	
 	gauss_init(rho, DIM);
 
+	/* Change chemical potential until convergence is reached */
 	do{
 		counter++;
 		mu = muMIN;
+		
+		/*
+		 * For each value of the chemical potential we find the solution
+		 * of the GP equation
+		 */
 		while(1)
 		{
 			/* solution of the equation for a given value of mu */
@@ -117,7 +144,7 @@ int main (int argc, char *argv[])
 				saveandprint(EV, y, DIM, path);	*/
 				save(EV, y, DIM);
 				printf("\n%d ... OLD = %.11e, \t EV = %.11e\n\n", counter, muOLD, EV);
-				fprintf(output_ev, "%d\t%.11e\n", counter, EV);		// print values of mu's as function of iterations
+				fprintf(output_ev, "%d\t%.11e\n", counter, EV);		// print values of the chemical potential as function of iterations
 				printf("normalization = %.12lf\n\n", normalization(rho,DIM));
 				break;
 			}
@@ -143,7 +170,7 @@ void gauss_init (double *v, int dim)
 {
 	int i;
 	for(i=0; i<dim; i++)
-		v[i] = exp(i*i*H*H);
+		v[i] = exp(i*i*H*H/2.0);
 	double S = normalization(v,dim);
 	for(i=dim-1; i>-1; i--)
 		v[i] *= (NPAR/S);
