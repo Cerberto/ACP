@@ -23,8 +23,8 @@ double sigma, Dsigma;
 /* Trial wave function and its transformed by hamiltonian operator */
 double trial_WF_gauss (double x);
 double H_trial_WF_gauss (double x);
-double trial_WF_agnesi (double x);
-double H_trial_WF_agnesi (double x);
+double trial_WF_lorentz (double x);
+double H_trial_WF_lorentz (double x);
 
 /* pointers to functions corresponding to wave function and its transform respectively */
 double (*WF)(double x);
@@ -56,7 +56,7 @@ int main (int argc, char *argv[])
 		autocorr_name	= malloc(100*sizeof(char));
 		
 	
-	printf("\nChoose type of trial function:\n 1 _ gaussian,\t2 _ Agnesi's witch\t\t");
+	printf("\nChoose type of trial function:\n 1 _ Gaussian,\t2 _ Lorentzian\t\t");
 		scanf("%d", &choice);
 	printf("\nSpecify minimum and maximum values of the wave function's parameter\n");
 		scanf("%lf", &sigma_min);
@@ -71,9 +71,9 @@ int main (int argc, char *argv[])
 			break;
 		
 		case 2:
-			sprintf(type, "agnesi");
-			WF		= trial_WF_agnesi;
-			H_WF	= H_trial_WF_agnesi;
+			sprintf(type, "lorentz");
+			WF		= trial_WF_lorentz;
+			H_WF	= H_trial_WF_lorentz;
 			break;
 
 		default:
@@ -183,11 +183,11 @@ double H_trial_WF_gauss (double x)
 {	return exp(-x*x/(2*sigma*sigma))*(sigma*sigma + x*x*(pow(sigma,4)-1))/2/pow(sigma,4);  }
 
 
-double trial_WF_agnesi (double x)
+double trial_WF_lorentz (double x)
 {	return 1/(x*x + sigma*sigma);  }
 
 
-double H_trial_WF_agnesi (double x)
+double H_trial_WF_lorentz (double x)
 {	return (2*sigma*sigma + x*x*((x*x+sigma*sigma)*(x*x+sigma*sigma) - 6))/(2*((x*x+sigma*sigma)*(x*x+sigma*sigma)*(x*x + sigma*sigma))); }
 
 
