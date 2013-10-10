@@ -27,7 +27,8 @@ double Zbisection (double (*f)(double), double *v, double accuracy)
 	double x, f0, f1, fx;
 	f0 = f(v[0]);
 	f1 = f(v[1]);
-	printf("Bisection %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
+	printf("\t\t x_min\t\t x_max\t\t f(x_min)\t f(x_max)\n");
+	printf("Bisection %d :\t%e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
 	
 	if(f0==f1 || (f0*f1>0))
 	{
@@ -48,8 +49,13 @@ double Zbisection (double (*f)(double), double *v, double accuracy)
 
 		else
 			break;
+			
+		if(i==200){
+			printf("\nBisection does not reach convergence!\n\n");
+			exit(EXIT_FAILURE);
+		}
 
-		printf("Bisection %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
+		printf("Bisection %d :\t%e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
 
 	}while(fabs(v[0]-v[1]) > accuracy);
 	
@@ -62,7 +68,8 @@ double Zsecant (double (*f)(double), double *v, double accuracy)
 	double x, f0, f1, fx;
 	f0 = f(v[0]);
 	f1 = f(v[1]);
-	printf("Secant    %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
+	printf("\t\t x_min\t\t x_max\t\t f(x_min)\t f(x_max)\n");
+	printf("Secant    %d :\t%e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
 	if((f0==f1) || (f0*f1>0))
 	{
 		printf("\nIt is impossible to use the secant method in finding the zeros of the function!\n\n");
@@ -82,8 +89,13 @@ double Zsecant (double (*f)(double), double *v, double accuracy)
 
 		else
 			break;
+		
+		if(i==200){
+			printf("\nSecant does not reach convergence!\n\n");
+			exit(EXIT_FAILURE);
+		}
 
-		printf("Secant    %d : %e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
+		printf("Secant    %d :\t%e\t%e\t%e\t%e\n", i, v[0], v[1], f0, f1);
 
 	}while(fabs(v[0]-v[1]) > accuracy);
 	

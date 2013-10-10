@@ -59,6 +59,7 @@ void evol_GP (double (*V)(double), double *rho, double alpha, double *y, int dim
 {
 	int i;
 	double Know, Kprev, Knext;
+	
 	for(i=1; i<dim-1; i++)
 	{
 		Kprev	= 2*(mu - 4*PI*alpha*rho[i-1] - V(i*h-h));
