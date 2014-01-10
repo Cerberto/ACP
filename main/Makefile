@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = GP_eq jacobi sph_HO metropolis_HO
+MAIN = GP_eq sph_HO metropolis_HO # jacobi
 
 RANDOM = ranlxs ranlxd gauss expo rootexpo gaussalt symexpo symrootexpo
 
@@ -54,7 +54,7 @@ INCPATH = ../include /usr/include
 
 # additional libraries to be included 
 
-LIBS = m gsl
+LIBS = m  # gsl
 
 LIBPATH = 
 
